@@ -1,0 +1,54 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+metadata:
+  template_name: Enclosure Chamber
+  template_author: Anonymous
+  template_version: 0.1.0
+  template_icon: shell-icon.png
+
+description: >
+  TOSCA based resource shell
+
+imports:
+  - cloudshell_standard: cloudshell_resource_standard_2_0_3.yaml
+
+node_types:
+
+  vendor.resource.Enclosure Chamber:
+    derived_from: cloudshell.nodes.GenericResource
+    properties:
+      Enclosure Model:
+        type: string
+        tags: [setting, configuration, search_filter,abstract_filter]
+      Enclosure Type:
+        type: string
+        default: Basic
+        tags: [setting, configuration, search_filter,abstract_filter]
+
+    capabilities:
+      auto_discovery_capability:
+        type: cloudshell.capabilities.AutoDiscovery
+        properties:        
+          enable_auto_discovery:
+            type: boolean
+            default: true
+          auto_discovery_description:
+            type: string
+            default: Describe the auto discovery
+          inventory_description:
+            type: string
+            default: Describe the resource shell template
+          Enclosure Model:
+            type: string
+            tags: [setting, configuration, search_filter,abstract_filter]
+          Enclosure Type:
+            type: string
+            default: Basic
+            tags: [setting, configuration, search_filter,abstract_filter]
+    artifacts:
+      icon:
+        file: shell-icon.png
+        type: tosca.artifacts.File
+      driver:
+        file: EnclosureChamberDriver.zip
+        type: tosca.artifacts.File
