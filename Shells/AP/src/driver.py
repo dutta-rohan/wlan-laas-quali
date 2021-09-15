@@ -1,7 +1,40 @@
+import os
+import git
+import shutil
+import subprocess
+import tempfile
+
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.shell.core.driver_context import InitCommandContext, ResourceCommandContext, AutoLoadResource, \
     AutoLoadAttribute, AutoLoadDetails, CancellationContext
+
+from cloudshell.shell.core.session.logging_session import LoggingSessionContext
+from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
+from cloudshell.core.context.error_handling_context import ErrorHandlingContext
 from data_model import *  # run 'shellfoundry generate' to generate data model classes
+
+GITHUB_REPO = 'https://github.com/Telecominfraproject/wlan-testing.git'
+GITHUB_REPO_Branch = 'master'
+GITHUB_REPO_NAME = 'wlan-testing'
+PDU_REPO_PATH = 'tools'
+PDU_SCRIPT_NAME = 'pdu_automation.py'
+
+def onerror(func, path, exc_info):
+    """
+    Error handler for ``shutil.rmtree``.
+
+    If the error is due to an access error (read only file)
+    it attempts to add write permission and then retries.
+
+    If the error is for another reason it re-raises the error.
+
+    Usage : ``shutil.rmtree(path, onerror=onerror)``
+    """
+    import stat
+    if not os.access(path, os.W_OK):
+        # Is the error an access error ?
+        os.chmod(path, stat.S_IWUSR)
+        func(path)
 
 
 class ApDriver (ResourceDriverInterface):
@@ -143,3 +176,79 @@ class ApDriver (ResourceDriverInterface):
         pass
 
     # </editor-fold>
+
+    def powerOffOtherAPs(self, context, cancellation_context):
+        res_id = context.reservation.reservation_id
+
+        with LoggingSessionContext(context) as logger, ErrorHandlingContext(logger):
+            with CloudShellSessionContext(context) as api_session:
+
+                other_aps = []
+
+                for each in api_session.FindResources(resourceModel='Ap').Resources:
+                    if context.resource.name != each.Name and context.resource.name.split(' - ')[1] == each.Name .split(' - ')[1]:
+                        other_aps.append(each)
+
+                if other_aps:
+                    for each in other_aps:
+                        hostname = context.resource.attributes["{}.PDU Host".format(each.Model)]
+                        username = context.resource.attributes["{}.PDU User".format(each.Model)]
+                        password = context.resource.attributes["{}.PDU Password".format(each.Model)]
+                        port = context.resource.attributes["{}.PDU Port".format(each.Model)]
+
+                        working_dir = tempfile.mkdtemp()
+                        git.Repo.clone_from(GITHUB_REPO, working_dir, branch=GITHUB_REPO_Branch, depth=1)
+
+                        tools_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH)
+                        script_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH, PDU_SCRIPT_NAME)
+
+                        cmd = "python3 {} --host {} --user {} --password {} --action off --port '{}'".format(PDU_SCRIPT_NAME, hostname, username, password, port)
+
+                        result = subprocess.Popen(cmd, cwd=tools_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        output, errors = result.communicate(' ')
+                        if errors:
+                            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+
+                        # Delete temp folder
+                        shutil.rmtree(working_dir, onerror=onerror)
+
+                else:
+                    api_session.WriteMessageToReservationOutput(res_id, 'No APs to power off.')
+
+    def powerOnOtherAPs(self, context, cancellation_context):
+        res_id = context.reservation.reservation_id
+
+        with LoggingSessionContext(context) as logger, ErrorHandlingContext(logger):
+            with CloudShellSessionContext(context) as api_session:
+
+                other_aps = []
+
+                for each in api_session.FindResources(resourceModel='Ap').Resources:
+                    if context.resource.name != each.Name and context.resource.name.split(' - ')[1] == each.Name .split(' - ')[1]:
+                        other_aps.append(each)
+
+                if other_aps:
+                    for each in other_aps:
+                        hostname = context.resource.attributes["{}.PDU Host".format(each.Model)]
+                        username = context.resource.attributes["{}.PDU User".format(each.Model)]
+                        password = context.resource.attributes["{}.PDU Password".format(each.Model)]
+                        port = context.resource.attributes["{}.PDU Port".format(each.Model)]
+
+                        working_dir = tempfile.mkdtemp()
+                        git.Repo.clone_from(GITHUB_REPO, working_dir, branch=GITHUB_REPO_Branch, depth=1)
+
+                        tools_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH)
+                        script_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH, PDU_SCRIPT_NAME)
+
+                        cmd = "python3 {} --host {} --user {} --password {} --action on --port '{}'".format(PDU_SCRIPT_NAME, hostname, username, password, port)
+
+                        result = subprocess.Popen(cmd, cwd=tools_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        output, errors = result.communicate(' ')
+                        if errors:
+                            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+
+                        # Delete temp folder
+                        shutil.rmtree(working_dir, onerror=onerror)
+
+                else:
+                    api_session.WriteMessageToReservationOutput(res_id, 'No APs to power on.')
