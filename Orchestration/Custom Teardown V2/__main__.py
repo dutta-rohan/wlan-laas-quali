@@ -11,7 +11,7 @@ def helm_uninstall(sandbox, components):
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
-        if each.ResourceModelName == 'Ap':
+        if each.ResourceModelName == 'ApV2':
             namespace = InputNameValue(Name='namespace', Value='qa01')
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
@@ -32,7 +32,7 @@ def factory_reset(api,res_id,ap_res,terminal_server):
                   InputNameValue("ap_jumphost", ap_jumphost),
                   InputNameValue("ap_port", ap_port)]
 
-        api.WriteMessageToReservationOutput(sandbox.id, "Run on {}".format(ap_res.Name))
+        api.WriteMessageToReservationOutput(sandbox.id, "Running on {}".format(ap_res.Name))
         res = api.ExecuteCommand(res_id,terminal_server,'Resource',"Run_Ap_Factory_Reset",inputs,printOutput = True)
 
      #   res = api.ExecuteResourceConnectedCommand(res_id, ap_res.Name,"Run_Script",inputs)
@@ -54,7 +54,7 @@ def execute_terminal_script(sandbox, components):
     if terminal_server:
     #Find all Access points resources in the reservation
         ap_resources =  [resource for resource in resources
-                     if resource.ResourceModelName == "Ap"]
+                     if resource.ResourceModelName == "ApV2"]
 
         if ap_resources:
             sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id, 'Running Factory Reset on all Access Points')
