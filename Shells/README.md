@@ -3,6 +3,20 @@
 ## AP Shell
 
 ## Controller VM
+The Controller VM Shell contains the logic to run the Factory Reset commands on the AP resources.
+
+#### Run_Ap_Factory_Reset
+The Run Ap Factory Reset command will take input to build to AP factory reset command.
+The inputs are supplied from the Setup scripts but can also be manually supplied through Quali API.
+
+* Required inputs
+    * chart_version
+    * ucentralgw_version
+    * ucentralsec_version
+    * ucentralfms_version
+    * ucentralgwui_version
+
+
 
 ## Helm Service V2
 This Helm Service V2 shell contains the logic to deploy and tear down an instance of the Cloud SDK.<br>
@@ -44,9 +58,13 @@ Uninstall flow is as follows:
 * Run command to delete SDk release from the namespace that was created
 * Run command to delete the namespace itself
 
+
+
 ## RF
 The RF shell does not contain any custom automation code.
 It is used to hold information/attributes that can otherwise be used from the CloudShell orchestration scripts or pytest runs.
+
+
 
 ## TG
 The TG shell does not contain any custom automation code.
