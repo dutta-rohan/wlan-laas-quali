@@ -1,5 +1,4 @@
 import os
-import git
 import shutil
 import subprocess
 import tempfile
