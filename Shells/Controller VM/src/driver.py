@@ -89,9 +89,7 @@ class ControllerVmDriver (ResourceDriverInterface):
                     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                     s.connect(hostname=context.resource.address, username=username, password=api_session.DecryptPassword(password).Value)
                     command = 'cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && chmod +x ap_tools.py && python3 ap_tools.py --host {} --jumphost {} --tty {} --port {} --username {} --password {} --cmd "jffs2reset -y -r"; cd /tmp && rm -f -r wlan-testing'.format(
-                              ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, ap_password)
-
-                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, command)
+                              ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, api_session.DecryptPassword(ap_password).Value)
 
                     (stdin, stdout, stderr) = s.exec_command(command)
                     output = ''
@@ -106,38 +104,6 @@ class ControllerVmDriver (ResourceDriverInterface):
                         api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
                                                                     'AP Factory Reset Complete.')
                     s.close()
-
-                    '''cli = CLI()
-                    mode = CommandMode(prompt=r'.*\$')  # for example r'%\s*$'
-
-                    with CloudShellSessionContext(context) as session:
-                        session_types = [SSHSession(host=context.resource.address,
-                                                    username=username,
-                                                    password=session.DecryptPassword(password).Value)]
-
-                        #command_string = 'cd /home/lanforge/lanforge-scripts/ && python3 ap_tools.py --host {} --jumphost {} --tty {} --port {} --username {} --password {} --cmd "jffs2reset -y -r" || true'.format(
-                        #    ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, ap_password)
-
-                        #command_string = 'cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && chmod +x ap_tools.py && ./ap_tools.py --host {} --jumphost {} --tty {} --port {} --username {} --password {} --cmd "jffs2reset -y -r"; cd /tmp && rm -f -r wlan-testing'.format(
-                        #     ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, ap_password)
-
-                        command_string = 'cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && chmod +x ap_tools.py; cd /tmp && rm -f -r wlan-testing'.format(
-                            ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, ap_password)
-
-                        logger.info("command string: {}".format(command_string))
-
-                        with cli.get_session(session_types, mode) as cli_service:
-                            out = cli_service.send_command(command_string)
-
-                            if out:
-                                logger.info("out: {}".format(out))
-                                session.SetResourceLiveStatus(context.resource.name, "Online")
-                            else:
-                                session.SetResourceLiveStatus(context.resource.name, "Offline")
-
-                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
-                                                                        'AP Factory Reset Complete.')
-                            return out'''
 
         except Exception as e:
             logger.info("Error executing Script: {}".format(e.message))
