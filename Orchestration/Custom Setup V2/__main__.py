@@ -7,8 +7,16 @@ from multiprocessing.pool import ThreadPool
 def helm_install(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
         if each.ServiceName == 'Helm Service V2':
-            #version = InputNameValue(Name='controller_version', Value=sandbox.global_inputs['Cloud Controller Version'])
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [])
+            chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
+            ucentralgw_version = InputNameValue(Name='ucentralgw_version', Value=sandbox.global_inputs['ucentralgw Version'])
+            ucentralsec_version = InputNameValue(Name='ucentralsec_version', Value=sandbox.global_inputs['ucentralsec Version'])
+            ucentralfms_version = InputNameValue(Name='ucentralfms_version', Value=sandbox.global_inputs['ucentralfms Version'])
+            ucentralgwui_version = InputNameValue(Name='ucentralgwui_version', Value=sandbox.global_inputs['ucentralgwui Version'])
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
+                                                                                                      ucentralgw_version,
+                                                                                                      ucentralsec_version,
+                                                                                                      ucentralfms_version,
+                                                                                                      ucentralgwui_version])
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
@@ -18,9 +26,8 @@ def ap_redirect(sandbox, components):
 def factory_reset(api,res_id,ap_res,terminal_server):
 
     try:
-        ap_user = api.GetAttributeValue(ap_res.Name, "{}.User".format(ap_res.ResourceModelName)).Value
-        ap_password = api.GetAttributeValue(ap_res.Name,"{}.Password".format(ap_res.ResourceModelName)).Value
-        ap_password = api.DecryptPassword(ap_password).Value
+        ap_user = api.GetAttributeValue(ap_res.Name, "{}.uname".format(ap_res.ResourceModelName)).Value
+        ap_password = api.GetAttributeValue(ap_res.Name,"{}.passkey".format(ap_res.ResourceModelName)).Value
         ap_tty = api.GetAttributeValue(ap_res.Name, "{}.jumphost_tty".format(ap_res.ResourceModelName)).Value
         ap_ip = api.GetResourceDetails(ap_res.Name).Address
         ap_jumphost = api.GetAttributeValue(ap_res.Name, "{}.jumphost".format(ap_res.ResourceModelName)).Value
