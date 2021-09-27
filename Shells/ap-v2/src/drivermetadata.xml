@@ -3,8 +3,16 @@
         <Category Name="Hidden Commands">
             <Command Description="" DisplayName="Orchestration Save" Name="orchestration_save" />
             <Command Description="" DisplayName="Orchestration Restore" Name="orchestration_restore" />
-            <Command Description="" DisplayName="Power Off Other Aps" Name="powerOffOtherAPs" />
-            <Command Description="" DisplayName="Power On Other APs" Name="powerOnOtherAPs" />
+            <Command Description="" DisplayName="apRedirect" Name="apRedirect">
+                <Parameters>
+                    <Parameter Name="namespace" DisplayName="namespace" Type="String" Mandatory="True" DefaultValue="qa01"/>
+                </Parameters>
+            </Command>
+            <Command Description="" DisplayName="powerOtherAPs" Name="powerOtherAPs">
+                <Parameters>
+                    <Parameter Name="cmd" DisplayName="cmd" Type="String" Mandatory="True" DefaultValue="on"/>
+                </Parameters>
+            </Command>
         </Category>
     </Layout>
 </Driver>

@@ -79,7 +79,7 @@ class ApV2(object):
         """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'Ap V2'
+        self._cloudshell_model_name = 'ApV2'
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -159,7 +159,7 @@ class ApV2(object):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Bands'] if 'Ap V2.Bands' in self.attributes else None
+        return self.attributes['ApV2.Bands'] if 'ApV2.Bands' in self.attributes else None
 
     @bands.setter
     def bands(self, value='dual-band'):
@@ -167,14 +167,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Bands'] = value
+        self.attributes['ApV2.Bands'] = value
 
     @property
     def radios(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Radios'] if 'Ap V2.Radios' in self.attributes else None
+        return self.attributes['ApV2.Radios'] if 'ApV2.Radios' in self.attributes else None
 
     @radios.setter
     def radios(self, value='2.4Ghz (2x2)'):
@@ -182,14 +182,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Radios'] = value
+        self.attributes['ApV2.Radios'] = value
 
     @property
     def radio_2dot4ghz(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Radio 2dot4Ghz'] if 'Ap V2.Radio 2dot4Ghz' in self.attributes else None
+        return self.attributes['ApV2.Radio 2dot4Ghz'] if 'ApV2.Radio 2dot4Ghz' in self.attributes else None
 
     @radio_2dot4ghz.setter
     def radio_2dot4ghz(self, value='(2x2)'):
@@ -197,14 +197,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Radio 2dot4Ghz'] = value
+        self.attributes['ApV2.Radio 2dot4Ghz'] = value
 
     @property
     def radio_5ghz_1(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Radio 5Ghz 1'] if 'Ap V2.Radio 5Ghz 1' in self.attributes else None
+        return self.attributes['ApV2.Radio 5Ghz 1'] if 'ApV2.Radio 5Ghz 1' in self.attributes else None
 
     @radio_5ghz_1.setter
     def radio_5ghz_1(self, value='(2x2)'):
@@ -212,14 +212,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Radio 5Ghz 1'] = value
+        self.attributes['ApV2.Radio 5Ghz 1'] = value
 
     @property
     def radio_5ghz_2(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Radio 5Ghz 2'] if 'Ap V2.Radio 5Ghz 2' in self.attributes else None
+        return self.attributes['ApV2.Radio 5Ghz 2'] if 'ApV2.Radio 5Ghz 2' in self.attributes else None
 
     @radio_5ghz_2.setter
     def radio_5ghz_2(self, value='N/A'):
@@ -227,14 +227,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Radio 5Ghz 2'] = value
+        self.attributes['ApV2.Radio 5Ghz 2'] = value
 
     @property
     def model(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.model'] if 'Ap V2.model' in self.attributes else None
+        return self.attributes['ApV2.model'] if 'ApV2.model' in self.attributes else None
 
     @model.setter
     def model(self, value):
@@ -242,14 +242,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.model'] = value
+        self.attributes['ApV2.model'] = value
 
     @property
     def mode(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.mode'] if 'Ap V2.mode' in self.attributes else None
+        return self.attributes['ApV2.mode'] if 'ApV2.mode' in self.attributes else None
 
     @mode.setter
     def mode(self, value='Wifi5'):
@@ -257,14 +257,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.mode'] = value
+        self.attributes['ApV2.mode'] = value
 
     @property
     def serial(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.serial'] if 'Ap V2.serial' in self.attributes else None
+        return self.attributes['ApV2.serial'] if 'ApV2.serial' in self.attributes else None
 
     @serial.setter
     def serial(self, value):
@@ -272,14 +272,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.serial'] = value
+        self.attributes['ApV2.serial'] = value
 
     @property
     def jumphost(self):
         """
         :rtype: bool
         """
-        return self.attributes['Ap V2.jumphost'] if 'Ap V2.jumphost' in self.attributes else None
+        return self.attributes['ApV2.jumphost'] if 'ApV2.jumphost' in self.attributes else None
 
     @jumphost.setter
     def jumphost(self, value):
@@ -287,14 +287,14 @@ class ApV2(object):
         
         :type value: bool
         """
-        self.attributes['Ap V2.jumphost'] = value
+        self.attributes['ApV2.jumphost'] = value
 
     @property
     def ip(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.ip'] if 'Ap V2.ip' in self.attributes else None
+        return self.attributes['ApV2.ip'] if 'ApV2.ip' in self.attributes else None
 
     @ip.setter
     def ip(self, value):
@@ -302,14 +302,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.ip'] = value
+        self.attributes['ApV2.ip'] = value
 
     @property
     def jumphost_tty(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.jumphost_tty'] if 'Ap V2.jumphost_tty' in self.attributes else None
+        return self.attributes['ApV2.jumphost_tty'] if 'ApV2.jumphost_tty' in self.attributes else None
 
     @jumphost_tty.setter
     def jumphost_tty(self, value='/dev/ttyAP1'):
@@ -317,14 +317,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.jumphost_tty'] = value
+        self.attributes['ApV2.jumphost_tty'] = value
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.version'] if 'Ap V2.version' in self.attributes else None
+        return self.attributes['ApV2.version'] if 'ApV2.version' in self.attributes else None
 
     @version.setter
     def version(self, value):
@@ -332,14 +332,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.version'] = value
+        self.attributes['ApV2.version'] = value
 
     @property
     def port(self):
         """
         :rtype: float
         """
-        return self.attributes['Ap V2.port'] if 'Ap V2.port' in self.attributes else None
+        return self.attributes['ApV2.port'] if 'ApV2.port' in self.attributes else None
 
     @port.setter
     def port(self, value='22'):
@@ -347,14 +347,14 @@ class ApV2(object):
         
         :type value: float
         """
-        self.attributes['Ap V2.port'] = value
+        self.attributes['ApV2.port'] = value
 
     @property
     def uname(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.uname'] if 'Ap V2.uname' in self.attributes else None
+        return self.attributes['ApV2.uname'] if 'ApV2.uname' in self.attributes else None
 
     @uname.setter
     def uname(self, value):
@@ -362,14 +362,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.uname'] = value
+        self.attributes['ApV2.uname'] = value
 
     @property
     def passkey(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.passkey'] if 'Ap V2.passkey' in self.attributes else None
+        return self.attributes['ApV2.passkey'] if 'ApV2.passkey' in self.attributes else None
 
     @passkey.setter
     def passkey(self, value):
@@ -377,14 +377,74 @@ class ApV2(object):
         
         :type value: string
         """
-        self.attributes['Ap V2.passkey'] = value
+        self.attributes['ApV2.passkey'] = value
+
+    @property
+    def pdu_host(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ApV2.PDU Host'] if 'ApV2.PDU Host' in self.attributes else None
+
+    @pdu_host.setter
+    def pdu_host(self, value):
+        """
+        
+        :type value: str
+        """
+        self.attributes['ApV2.PDU Host'] = value
+
+    @property
+    def pdu_user(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ApV2.PDU User'] if 'ApV2.PDU User' in self.attributes else None
+
+    @pdu_user.setter
+    def pdu_user(self, value):
+        """
+        
+        :type value: str
+        """
+        self.attributes['ApV2.PDU User'] = value
+
+    @property
+    def pdu_password(self):
+        """
+        :rtype: string
+        """
+        return self.attributes['ApV2.PDU Password'] if 'ApV2.PDU Password' in self.attributes else None
+
+    @pdu_password.setter
+    def pdu_password(self, value):
+        """
+        
+        :type value: string
+        """
+        self.attributes['ApV2.PDU Password'] = value
+
+    @property
+    def pdu_port(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ApV2.PDU Port'] if 'ApV2.PDU Port' in self.attributes else None
+
+    @pdu_port.setter
+    def pdu_port(self, value):
+        """
+        
+        :type value: str
+        """
+        self.attributes['ApV2.PDU Port'] = value
 
     @property
     def user(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.User'] if 'Ap V2.User' in self.attributes else None
+        return self.attributes['ApV2.User'] if 'ApV2.User' in self.attributes else None
 
     @user.setter
     def user(self, value):
@@ -392,14 +452,14 @@ class ApV2(object):
         User with administrative privileges
         :type value: str
         """
-        self.attributes['Ap V2.User'] = value
+        self.attributes['ApV2.User'] = value
 
     @property
     def password(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.Password'] if 'Ap V2.Password' in self.attributes else None
+        return self.attributes['ApV2.Password'] if 'ApV2.Password' in self.attributes else None
 
     @password.setter
     def password(self, value):
@@ -407,14 +467,14 @@ class ApV2(object):
         
         :type value: string
         """
-        self.attributes['Ap V2.Password'] = value
+        self.attributes['ApV2.Password'] = value
 
     @property
     def enable_password(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.Enable Password'] if 'Ap V2.Enable Password' in self.attributes else None
+        return self.attributes['ApV2.Enable Password'] if 'ApV2.Enable Password' in self.attributes else None
 
     @enable_password.setter
     def enable_password(self, value):
@@ -422,14 +482,14 @@ class ApV2(object):
         The enable password is required by some CLI protocols such as Telnet and is required according to the device configuration.
         :type value: string
         """
-        self.attributes['Ap V2.Enable Password'] = value
+        self.attributes['ApV2.Enable Password'] = value
 
     @property
     def power_management(self):
         """
         :rtype: bool
         """
-        return self.attributes['Ap V2.Power Management'] if 'Ap V2.Power Management' in self.attributes else None
+        return self.attributes['ApV2.Power Management'] if 'ApV2.Power Management' in self.attributes else None
 
     @power_management.setter
     def power_management(self, value=True):
@@ -437,14 +497,14 @@ class ApV2(object):
         Used by the power management orchestration, if enabled, to determine whether to automatically manage the device power status. Enabled by default.
         :type value: bool
         """
-        self.attributes['Ap V2.Power Management'] = value
+        self.attributes['ApV2.Power Management'] = value
 
     @property
     def sessions_concurrency_limit(self):
         """
         :rtype: float
         """
-        return self.attributes['Ap V2.Sessions Concurrency Limit'] if 'Ap V2.Sessions Concurrency Limit' in self.attributes else None
+        return self.attributes['ApV2.Sessions Concurrency Limit'] if 'ApV2.Sessions Concurrency Limit' in self.attributes else None
 
     @sessions_concurrency_limit.setter
     def sessions_concurrency_limit(self, value='1'):
@@ -452,14 +512,14 @@ class ApV2(object):
         The maximum number of concurrent sessions that the driver will open to the device. Default is 1 (no concurrency).
         :type value: float
         """
-        self.attributes['Ap V2.Sessions Concurrency Limit'] = value
+        self.attributes['ApV2.Sessions Concurrency Limit'] = value
 
     @property
     def snmp_read_community(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.SNMP Read Community'] if 'Ap V2.SNMP Read Community' in self.attributes else None
+        return self.attributes['ApV2.SNMP Read Community'] if 'ApV2.SNMP Read Community' in self.attributes else None
 
     @snmp_read_community.setter
     def snmp_read_community(self, value):
@@ -467,14 +527,14 @@ class ApV2(object):
         The SNMP Read-Only Community String is like a password. It is sent along with each SNMP Get-Request and allows (or denies) access to device.
         :type value: string
         """
-        self.attributes['Ap V2.SNMP Read Community'] = value
+        self.attributes['ApV2.SNMP Read Community'] = value
 
     @property
     def snmp_write_community(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.SNMP Write Community'] if 'Ap V2.SNMP Write Community' in self.attributes else None
+        return self.attributes['ApV2.SNMP Write Community'] if 'ApV2.SNMP Write Community' in self.attributes else None
 
     @snmp_write_community.setter
     def snmp_write_community(self, value):
@@ -482,14 +542,14 @@ class ApV2(object):
         The SNMP Write Community String is like a password. It is sent along with each SNMP Set-Request and allows (or denies) chaning MIBs values.
         :type value: string
         """
-        self.attributes['Ap V2.SNMP Write Community'] = value
+        self.attributes['ApV2.SNMP Write Community'] = value
 
     @property
     def snmp_v3_user(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.SNMP V3 User'] if 'Ap V2.SNMP V3 User' in self.attributes else None
+        return self.attributes['ApV2.SNMP V3 User'] if 'ApV2.SNMP V3 User' in self.attributes else None
 
     @snmp_v3_user.setter
     def snmp_v3_user(self, value):
@@ -497,14 +557,14 @@ class ApV2(object):
         Relevant only in case SNMP V3 is in use.
         :type value: str
         """
-        self.attributes['Ap V2.SNMP V3 User'] = value
+        self.attributes['ApV2.SNMP V3 User'] = value
 
     @property
     def snmp_v3_password(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.SNMP V3 Password'] if 'Ap V2.SNMP V3 Password' in self.attributes else None
+        return self.attributes['ApV2.SNMP V3 Password'] if 'ApV2.SNMP V3 Password' in self.attributes else None
 
     @snmp_v3_password.setter
     def snmp_v3_password(self, value):
@@ -512,14 +572,14 @@ class ApV2(object):
         Relevant only in case SNMP V3 is in use.
         :type value: string
         """
-        self.attributes['Ap V2.SNMP V3 Password'] = value
+        self.attributes['ApV2.SNMP V3 Password'] = value
 
     @property
     def snmp_v3_private_key(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.SNMP V3 Private Key'] if 'Ap V2.SNMP V3 Private Key' in self.attributes else None
+        return self.attributes['ApV2.SNMP V3 Private Key'] if 'ApV2.SNMP V3 Private Key' in self.attributes else None
 
     @snmp_v3_private_key.setter
     def snmp_v3_private_key(self, value):
@@ -527,14 +587,14 @@ class ApV2(object):
         Relevant only in case SNMP V3 is in use.
         :type value: str
         """
-        self.attributes['Ap V2.SNMP V3 Private Key'] = value
+        self.attributes['ApV2.SNMP V3 Private Key'] = value
 
     @property
     def snmp_v3_authentication_protocol(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.SNMP V3 Authentication Protocol'] if 'Ap V2.SNMP V3 Authentication Protocol' in self.attributes else None
+        return self.attributes['ApV2.SNMP V3 Authentication Protocol'] if 'ApV2.SNMP V3 Authentication Protocol' in self.attributes else None
 
     @snmp_v3_authentication_protocol.setter
     def snmp_v3_authentication_protocol(self, value='No Authentication Protocol'):
@@ -542,14 +602,14 @@ class ApV2(object):
         Relevant only in case SNMP V3 is in use.
         :type value: str
         """
-        self.attributes['Ap V2.SNMP V3 Authentication Protocol'] = value
+        self.attributes['ApV2.SNMP V3 Authentication Protocol'] = value
 
     @property
     def snmp_v3_privacy_protocol(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.SNMP V3 Privacy Protocol'] if 'Ap V2.SNMP V3 Privacy Protocol' in self.attributes else None
+        return self.attributes['ApV2.SNMP V3 Privacy Protocol'] if 'ApV2.SNMP V3 Privacy Protocol' in self.attributes else None
 
     @snmp_v3_privacy_protocol.setter
     def snmp_v3_privacy_protocol(self, value='No Privacy Protocol'):
@@ -557,14 +617,14 @@ class ApV2(object):
         Relevant only in case SNMP V3 is in use.
         :type value: str
         """
-        self.attributes['Ap V2.SNMP V3 Privacy Protocol'] = value
+        self.attributes['ApV2.SNMP V3 Privacy Protocol'] = value
 
     @property
     def snmp_version(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.SNMP Version'] if 'Ap V2.SNMP Version' in self.attributes else None
+        return self.attributes['ApV2.SNMP Version'] if 'ApV2.SNMP Version' in self.attributes else None
 
     @snmp_version.setter
     def snmp_version(self, value=''):
@@ -572,14 +632,14 @@ class ApV2(object):
         The version of SNMP to use. Possible values are v1, v2c and v3.
         :type value: str
         """
-        self.attributes['Ap V2.SNMP Version'] = value
+        self.attributes['ApV2.SNMP Version'] = value
 
     @property
     def enable_snmp(self):
         """
         :rtype: bool
         """
-        return self.attributes['Ap V2.Enable SNMP'] if 'Ap V2.Enable SNMP' in self.attributes else None
+        return self.attributes['ApV2.Enable SNMP'] if 'ApV2.Enable SNMP' in self.attributes else None
 
     @enable_snmp.setter
     def enable_snmp(self, value=True):
@@ -587,14 +647,14 @@ class ApV2(object):
         If set to True and SNMP isn???t enabled yet in the device the Shell will automatically enable SNMP in the device when Autoload command is called. SNMP must be enabled on the device for the Autoload command to run successfully. True by default.
         :type value: bool
         """
-        self.attributes['Ap V2.Enable SNMP'] = value
+        self.attributes['ApV2.Enable SNMP'] = value
 
     @property
     def disable_snmp(self):
         """
         :rtype: bool
         """
-        return self.attributes['Ap V2.Disable SNMP'] if 'Ap V2.Disable SNMP' in self.attributes else None
+        return self.attributes['ApV2.Disable SNMP'] if 'ApV2.Disable SNMP' in self.attributes else None
 
     @disable_snmp.setter
     def disable_snmp(self, value=False):
@@ -602,14 +662,14 @@ class ApV2(object):
         If set to True SNMP will be disabled automatically by the Shell after the Autoload command execution is completed. False by default.
         :type value: bool
         """
-        self.attributes['Ap V2.Disable SNMP'] = value
+        self.attributes['ApV2.Disable SNMP'] = value
 
     @property
     def console_server_ip_address(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Console Server IP Address'] if 'Ap V2.Console Server IP Address' in self.attributes else None
+        return self.attributes['ApV2.Console Server IP Address'] if 'ApV2.Console Server IP Address' in self.attributes else None
 
     @console_server_ip_address.setter
     def console_server_ip_address(self, value):
@@ -617,14 +677,14 @@ class ApV2(object):
         The IP address of the console server, in IPv4 format.
         :type value: str
         """
-        self.attributes['Ap V2.Console Server IP Address'] = value
+        self.attributes['ApV2.Console Server IP Address'] = value
 
     @property
     def console_user(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Console User'] if 'Ap V2.Console User' in self.attributes else None
+        return self.attributes['ApV2.Console User'] if 'ApV2.Console User' in self.attributes else None
 
     @console_user.setter
     def console_user(self, value):
@@ -632,14 +692,14 @@ class ApV2(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.Console User'] = value
+        self.attributes['ApV2.Console User'] = value
 
     @property
     def console_port(self):
         """
         :rtype: float
         """
-        return self.attributes['Ap V2.Console Port'] if 'Ap V2.Console Port' in self.attributes else None
+        return self.attributes['ApV2.Console Port'] if 'ApV2.Console Port' in self.attributes else None
 
     @console_port.setter
     def console_port(self, value):
@@ -647,14 +707,14 @@ class ApV2(object):
         The port on the console server, usually TCP port, which the device is associated with.
         :type value: float
         """
-        self.attributes['Ap V2.Console Port'] = value
+        self.attributes['ApV2.Console Port'] = value
 
     @property
     def console_password(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.Console Password'] if 'Ap V2.Console Password' in self.attributes else None
+        return self.attributes['ApV2.Console Password'] if 'ApV2.Console Password' in self.attributes else None
 
     @console_password.setter
     def console_password(self, value):
@@ -662,14 +722,14 @@ class ApV2(object):
         
         :type value: string
         """
-        self.attributes['Ap V2.Console Password'] = value
+        self.attributes['ApV2.Console Password'] = value
 
     @property
     def cli_connection_type(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.CLI Connection Type'] if 'Ap V2.CLI Connection Type' in self.attributes else None
+        return self.attributes['ApV2.CLI Connection Type'] if 'ApV2.CLI Connection Type' in self.attributes else None
 
     @cli_connection_type.setter
     def cli_connection_type(self, value='Auto'):
@@ -677,14 +737,14 @@ class ApV2(object):
         The CLI connection type that will be used by the driver. Possible values are Auto, Console, SSH, Telnet and TCP. If Auto is selected the driver will choose the available connection type automatically. Default value is Auto.
         :type value: str
         """
-        self.attributes['Ap V2.CLI Connection Type'] = value
+        self.attributes['ApV2.CLI Connection Type'] = value
 
     @property
     def cli_tcp_port(self):
         """
         :rtype: float
         """
-        return self.attributes['Ap V2.CLI TCP Port'] if 'Ap V2.CLI TCP Port' in self.attributes else None
+        return self.attributes['ApV2.CLI TCP Port'] if 'ApV2.CLI TCP Port' in self.attributes else None
 
     @cli_tcp_port.setter
     def cli_tcp_port(self, value):
@@ -692,14 +752,14 @@ class ApV2(object):
         TCP Port to user for CLI connection. If kept empty a default CLI port will be used based on the chosen protocol, for example Telnet will use port 23.
         :type value: float
         """
-        self.attributes['Ap V2.CLI TCP Port'] = value
+        self.attributes['ApV2.CLI TCP Port'] = value
 
     @property
     def backup_location(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Backup Location'] if 'Ap V2.Backup Location' in self.attributes else None
+        return self.attributes['ApV2.Backup Location'] if 'ApV2.Backup Location' in self.attributes else None
 
     @backup_location.setter
     def backup_location(self, value):
@@ -707,14 +767,14 @@ class ApV2(object):
         Used by the save/restore orchestration to determine where backups should be saved.
         :type value: str
         """
-        self.attributes['Ap V2.Backup Location'] = value
+        self.attributes['ApV2.Backup Location'] = value
 
     @property
     def backup_type(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Backup Type'] if 'Ap V2.Backup Type' in self.attributes else None
+        return self.attributes['ApV2.Backup Type'] if 'ApV2.Backup Type' in self.attributes else None
 
     @backup_type.setter
     def backup_type(self, value='File System'):
@@ -722,14 +782,14 @@ class ApV2(object):
         Supported protocols for saving and restoring of configuration and firmware files. Possible values are 'File System' 'FTP' and 'TFTP'. Default value is 'File System'.
         :type value: str
         """
-        self.attributes['Ap V2.Backup Type'] = value
+        self.attributes['ApV2.Backup Type'] = value
 
     @property
     def backup_user(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.Backup User'] if 'Ap V2.Backup User' in self.attributes else None
+        return self.attributes['ApV2.Backup User'] if 'ApV2.Backup User' in self.attributes else None
 
     @backup_user.setter
     def backup_user(self, value):
@@ -737,14 +797,14 @@ class ApV2(object):
         Username for the storage server used for saving and restoring of configuration and firmware files.
         :type value: str
         """
-        self.attributes['Ap V2.Backup User'] = value
+        self.attributes['ApV2.Backup User'] = value
 
     @property
     def backup_password(self):
         """
         :rtype: string
         """
-        return self.attributes['Ap V2.Backup Password'] if 'Ap V2.Backup Password' in self.attributes else None
+        return self.attributes['ApV2.Backup Password'] if 'ApV2.Backup Password' in self.attributes else None
 
     @backup_password.setter
     def backup_password(self, value):
@@ -752,7 +812,7 @@ class ApV2(object):
         Password for the storage server used for saving and restoring of configuration and firmware files.
         :type value: string
         """
-        self.attributes['Ap V2.Backup Password'] = value
+        self.attributes['ApV2.Backup Password'] = value
 
     @property
     def name(self):
@@ -882,7 +942,7 @@ class ResourcePort(object):
         """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'Ap V2.ResourcePort'
+        self._cloudshell_model_name = 'ApV2.ResourcePort'
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -962,7 +1022,7 @@ class ResourcePort(object):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.ResourcePort.MAC Address'] if 'Ap V2.ResourcePort.MAC Address' in self.attributes else None
+        return self.attributes['ApV2.ResourcePort.MAC Address'] if 'ApV2.ResourcePort.MAC Address' in self.attributes else None
 
     @mac_address.setter
     def mac_address(self, value=''):
@@ -970,14 +1030,14 @@ class ResourcePort(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.ResourcePort.MAC Address'] = value
+        self.attributes['ApV2.ResourcePort.MAC Address'] = value
 
     @property
     def ipv4_address(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.ResourcePort.IPv4 Address'] if 'Ap V2.ResourcePort.IPv4 Address' in self.attributes else None
+        return self.attributes['ApV2.ResourcePort.IPv4 Address'] if 'ApV2.ResourcePort.IPv4 Address' in self.attributes else None
 
     @ipv4_address.setter
     def ipv4_address(self, value):
@@ -985,14 +1045,14 @@ class ResourcePort(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.ResourcePort.IPv4 Address'] = value
+        self.attributes['ApV2.ResourcePort.IPv4 Address'] = value
 
     @property
     def ipv6_address(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.ResourcePort.IPv6 Address'] if 'Ap V2.ResourcePort.IPv6 Address' in self.attributes else None
+        return self.attributes['ApV2.ResourcePort.IPv6 Address'] if 'ApV2.ResourcePort.IPv6 Address' in self.attributes else None
 
     @ipv6_address.setter
     def ipv6_address(self, value):
@@ -1000,14 +1060,14 @@ class ResourcePort(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.ResourcePort.IPv6 Address'] = value
+        self.attributes['ApV2.ResourcePort.IPv6 Address'] = value
 
     @property
     def port_speed(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.ResourcePort.Port Speed'] if 'Ap V2.ResourcePort.Port Speed' in self.attributes else None
+        return self.attributes['ApV2.ResourcePort.Port Speed'] if 'ApV2.ResourcePort.Port Speed' in self.attributes else None
 
     @port_speed.setter
     def port_speed(self, value):
@@ -1015,7 +1075,7 @@ class ResourcePort(object):
         The port speed (e.g 10Gb/s, 40Gb/s, 100Mb/s)
         :type value: str
         """
-        self.attributes['Ap V2.ResourcePort.Port Speed'] = value
+        self.attributes['ApV2.ResourcePort.Port Speed'] = value
 
     @property
     def name(self):
@@ -1070,7 +1130,7 @@ class GenericPowerPort(object):
         """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'Ap V2.GenericPowerPort'
+        self._cloudshell_model_name = 'ApV2.GenericPowerPort'
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -1150,7 +1210,7 @@ class GenericPowerPort(object):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.GenericPowerPort.Model'] if 'Ap V2.GenericPowerPort.Model' in self.attributes else None
+        return self.attributes['ApV2.GenericPowerPort.Model'] if 'ApV2.GenericPowerPort.Model' in self.attributes else None
 
     @model.setter
     def model(self, value):
@@ -1158,14 +1218,14 @@ class GenericPowerPort(object):
         The device model. This information is typically used for abstract resource filtering.
         :type value: str
         """
-        self.attributes['Ap V2.GenericPowerPort.Model'] = value
+        self.attributes['ApV2.GenericPowerPort.Model'] = value
 
     @property
     def serial_number(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.GenericPowerPort.Serial Number'] if 'Ap V2.GenericPowerPort.Serial Number' in self.attributes else None
+        return self.attributes['ApV2.GenericPowerPort.Serial Number'] if 'ApV2.GenericPowerPort.Serial Number' in self.attributes else None
 
     @serial_number.setter
     def serial_number(self, value):
@@ -1173,14 +1233,14 @@ class GenericPowerPort(object):
         
         :type value: str
         """
-        self.attributes['Ap V2.GenericPowerPort.Serial Number'] = value
+        self.attributes['ApV2.GenericPowerPort.Serial Number'] = value
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.GenericPowerPort.Version'] if 'Ap V2.GenericPowerPort.Version' in self.attributes else None
+        return self.attributes['ApV2.GenericPowerPort.Version'] if 'ApV2.GenericPowerPort.Version' in self.attributes else None
 
     @version.setter
     def version(self, value):
@@ -1188,14 +1248,14 @@ class GenericPowerPort(object):
         The firmware version of the resource.
         :type value: str
         """
-        self.attributes['Ap V2.GenericPowerPort.Version'] = value
+        self.attributes['ApV2.GenericPowerPort.Version'] = value
 
     @property
     def port_description(self):
         """
         :rtype: str
         """
-        return self.attributes['Ap V2.GenericPowerPort.Port Description'] if 'Ap V2.GenericPowerPort.Port Description' in self.attributes else None
+        return self.attributes['ApV2.GenericPowerPort.Port Description'] if 'ApV2.GenericPowerPort.Port Description' in self.attributes else None
 
     @port_description.setter
     def port_description(self, value):
@@ -1203,7 +1263,7 @@ class GenericPowerPort(object):
         The description of the port as configured in the device.
         :type value: str
         """
-        self.attributes['Ap V2.GenericPowerPort.Port Description'] = value
+        self.attributes['ApV2.GenericPowerPort.Port Description'] = value
 
     @property
     def name(self):
