@@ -21,7 +21,8 @@ def helm_install(sandbox, components):
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
         if each.ResourceModelName == 'Ap':
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'Digicert AP Redirector', [])
+            namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
 def factory_reset(api,res_id,ap_res,terminal_server):
 
