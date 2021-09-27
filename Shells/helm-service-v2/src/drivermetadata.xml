@@ -2,7 +2,11 @@
     <Layout>
         <Command Description="Helm Install" Name="helm_install" DisplayName="Helm Install" Visibility="AdminOnly">
             <Parameters>
-                <Parameter DefaultValue="1.0.0-SNAPSHOT" Description="Cloud Controller Version" DisplayName="Cloud Controller Version" Mandatory="True" Name="controller_version" Type="String" />
+                <Parameter DefaultValue="main" Description="Chart Version" DisplayName="Chart Version" Mandatory="True" Name="chart_version" Type="String" />
+                <Parameter DefaultValue="master" Description="ucentralgw Version" DisplayName="ucentralgw Version" Mandatory="True" Name="ucentralgw_version" Type="String" />
+                <Parameter DefaultValue="main" Description="ucentralsec Version" DisplayName="ucentralsec Version" Mandatory="True" Name="ucentralsec_version" Type="String" />
+                <Parameter DefaultValue="main" Description="ucentralfms Version" DisplayName="ucentralfms Version" Mandatory="True" Name="ucentralfms_version" Type="String" />
+                <Parameter DefaultValue="main" Description="ucentralgwui Version" DisplayName="ucentralgwui Version" Mandatory="True" Name="ucentralgwui_version" Type="String" />
             </Parameters>
         </Command>
         <Command Description="Helm Uninstall" Name="helm_uninstall" DisplayName="Helm Uninstall" Visibility="AdminOnly"/>
