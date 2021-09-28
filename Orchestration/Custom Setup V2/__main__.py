@@ -24,6 +24,12 @@ def ap_redirect(sandbox, components):
             namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
+def power_off_other_aps(sandbox, components):
+    for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
+        if each.ResourceModelName == 'ApV2':
+            cmd = InputNameValue(Name='cmd', Value='off')
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'powerOtherAPs', [cmd])
+
 def factory_reset(api,res_id,ap_res,terminal_server):
 
     try:
@@ -88,5 +94,6 @@ DefaultSetupWorkflow().register(sandbox)
 sandbox.workflow.add_to_provisioning(helm_install, [])
 sandbox.workflow.on_provisioning_ended(ap_redirect, [])
 sandbox.workflow.on_provisioning_ended(execute_terminal_script, [])
+sandbox.workflow.on_provisioning_ended(power_off_other_aps, [])
 
 sandbox.execute_setup()

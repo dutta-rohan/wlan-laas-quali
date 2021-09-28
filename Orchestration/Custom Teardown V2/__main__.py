@@ -15,6 +15,12 @@ def ap_redirect(sandbox, components):
             namespace = InputNameValue(Name='namespace', Value='qa01')
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
+def power_on_other_aps(sandbox, components):
+    for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
+        if each.ResourceModelName == 'ApV2':
+            cmd = InputNameValue(Name='cmd', Value='on')
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'powerOtherAPs', [cmd])
+
 def factory_reset(api,res_id,ap_res,terminal_server):
 
     try:
@@ -79,5 +85,6 @@ DefaultTeardownWorkflow().register(sandbox)
 sandbox.workflow.before_teardown_started(helm_uninstall, [])
 sandbox.workflow.before_teardown_started(ap_redirect, [])
 sandbox.workflow.before_teardown_started(execute_terminal_script, [])
+sandbox.workflow.on_provisioning_ended(power_on_other_aps, [])
 
 sandbox.execute_teardown()
