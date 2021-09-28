@@ -19,7 +19,7 @@ GITHUB_REPO = 'https://github.com/Telecominfraproject/wlan-testing.git'
 GITHUB_REPO_Branch = 'master'
 GITHUB_REPO_NAME = 'wlan-testing'
 PDU_REPO_PATH = 'tools'
-PDU_SCRIPT_NAME = 'pdu_automation.py'
+PDU_SCRIPT_NAME = 'pdu_v3.py'
 
 # Vars for ap redirect
 SCRIPT_URL = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-change-ap-redirector.sh'
@@ -179,7 +179,7 @@ class ApV2Driver (ResourceDriverInterface):
                     resource.attributes['Digicert API Key']).Value
 
                 result = subprocess.Popen(
-                    './digicert-change-ap-redirector.sh {} {}'.format(resource.attributes['ApV2.serial'.format(resource.cloudshell_model_name)], redirect_url),
+                    './digicert-change-ap-redirector.sh {} {}'.format(resource.attributes['{}.serial'.format(resource.cloudshell_model_name)], redirect_url),
                     cwd=working_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output, errors = result.communicate(' ')
                 if errors:
@@ -199,27 +199,29 @@ class ApV2Driver (ResourceDriverInterface):
 
                 other_aps = []
 
-                for each in api_session.FindResources(resourceModel=resource.model_name).Resources:
+                for each in api_session.FindResources(resourceModel=resource.cloudshell_model_name).Resources:
                     if context.resource.name != each.Name and context.resource.name.split(' - ')[1] == each.Name .split(' - ')[1]:
                         other_aps.append(each)
 
                 if other_aps:
                     for each in other_aps:
+                        api_session.WriteMessageToReservationOutput(res_id, 'Attempting to power {} {}.'.format(cmd, each.Name))
+
                         terminal_ip = api_session.GetResourceDetails(each.Name).Address
-                        terminal_user = context.resource.attributes["{}.uname".format(each.Model)]
-                        terminal_pass = context.resource.attributes["{}.passkey".format(each.Model)]
+                        terminal_user = api_session.GetAttributeValue(each.Name, "{}.uname".format(each.ResourceModelName)).Value
+                        terminal_pass = api_session.GetAttributeValue(each.Name, "{}.passkey".format(each.ResourceModelName)).Value
                         terminal_pass = api_session.DecryptPassword(terminal_pass).Value
-                        hostname = context.resource.attributes["{}.PDU Host".format(each.Model)]
-                        username = context.resource.attributes["{}.PDU User".format(each.Model)]
-                        password = context.resource.attributes["{}.PDU Password".format(each.Model)]
+                        hostname = api_session.GetAttributeValue(each.Name, "{}.PDU Host".format(each.ResourceModelName)).Value
+                        username = api_session.GetAttributeValue(each.Name, "{}.PDU User".format(each.ResourceModelName)).Value
+                        password = api_session.GetAttributeValue(each.Name, "{}.PDU Password".format(each.ResourceModelName)).Value
                         password = api_session.DecryptPassword(password).Value
-                        port = context.resource.attributes["{}.PDU Port".format(each.Model)]
+                        port = api_session.GetAttributeValue(each.Name, "{}.PDU Port".format(each.ResourceModelName)).Value
 
                         s = paramiko.SSHClient()
                         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                         s.connect(hostname=terminal_ip, username=terminal_user,
                                   password=terminal_pass)
-                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port '{}'; cd /tmp && rm -f -r wlan-testing".format(
+                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port {}; cd /tmp && rm -f -r wlan-testing".format(
                             PDU_SCRIPT_NAME, hostname, username, password, cmd, port)
 
                         (stdin, stdout, stderr) = s.exec_command(command)
