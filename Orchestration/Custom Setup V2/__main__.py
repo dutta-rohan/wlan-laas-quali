@@ -8,15 +8,15 @@ def helm_install(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
         if each.ServiceName == 'Helm Service V2':
             chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
-            ucentralgw_version = InputNameValue(Name='ucentralgw_version', Value=sandbox.global_inputs['ucentralgw Version'])
-            ucentralsec_version = InputNameValue(Name='ucentralsec_version', Value=sandbox.global_inputs['ucentralsec Version'])
-            ucentralfms_version = InputNameValue(Name='ucentralfms_version', Value=sandbox.global_inputs['ucentralfms Version'])
-            ucentralgwui_version = InputNameValue(Name='ucentralgwui_version', Value=sandbox.global_inputs['ucentralgwui Version'])
+            owgw_version = InputNameValue(Name='owgw_version', Value=sandbox.global_inputs['owgw Version'])
+            owsec_version = InputNameValue(Name='owsec_version', Value=sandbox.global_inputs['owsec Version'])
+            owfms_version = InputNameValue(Name='owfms_version', Value=sandbox.global_inputs['owfms Version'])
+            owgwui_version = InputNameValue(Name='owgwui_version', Value=sandbox.global_inputs['owgwui Version'])
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
-                                                                                                      ucentralgw_version,
-                                                                                                      ucentralsec_version,
-                                                                                                      ucentralfms_version,
-                                                                                                      ucentralgwui_version])
+                                                                                                      owgw_version,
+                                                                                                      owsec_version,
+                                                                                                      owfms_version,
+                                                                                                      owgwui_version])
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
