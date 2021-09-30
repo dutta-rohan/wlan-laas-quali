@@ -7,20 +7,34 @@ from multiprocessing.pool import ThreadPool
 def helm_install(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
         if each.ServiceName == 'Helm Service V2':
-            #version = InputNameValue(Name='controller_version', Value=sandbox.global_inputs['Cloud Controller Version'])
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [])
+            chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
+            ucentralgw_version = InputNameValue(Name='ucentralgw_version', Value=sandbox.global_inputs['ucentralgw Version'])
+            ucentralsec_version = InputNameValue(Name='ucentralsec_version', Value=sandbox.global_inputs['ucentralsec Version'])
+            ucentralfms_version = InputNameValue(Name='ucentralfms_version', Value=sandbox.global_inputs['ucentralfms Version'])
+            ucentralgwui_version = InputNameValue(Name='ucentralgwui_version', Value=sandbox.global_inputs['ucentralgwui Version'])
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
+                                                                                                      ucentralgw_version,
+                                                                                                      ucentralsec_version,
+                                                                                                      ucentralfms_version,
+                                                                                                      ucentralgwui_version])
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
-        if each.ResourceModelName == 'Ap':
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'Digicert AP Redirector', [])
+        if each.ResourceModelName == 'ApV2':
+            namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
+
+def power_off_other_aps(sandbox, components):
+    for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
+        if each.ResourceModelName == 'ApV2':
+            cmd = InputNameValue(Name='cmd', Value='off')
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'powerOtherAPs', [cmd])
 
 def factory_reset(api,res_id,ap_res,terminal_server):
 
     try:
-        ap_user = api.GetAttributeValue(ap_res.Name, "{}.User".format(ap_res.ResourceModelName)).Value
-        ap_password = api.GetAttributeValue(ap_res.Name,"{}.Password".format(ap_res.ResourceModelName)).Value
-        ap_password = api.DecryptPassword(ap_password).Value
+        ap_user = api.GetAttributeValue(ap_res.Name, "{}.uname".format(ap_res.ResourceModelName)).Value
+        ap_password = api.GetAttributeValue(ap_res.Name,"{}.passkey".format(ap_res.ResourceModelName)).Value
         ap_tty = api.GetAttributeValue(ap_res.Name, "{}.jumphost_tty".format(ap_res.ResourceModelName)).Value
         ap_ip = api.GetResourceDetails(ap_res.Name).Address
         ap_jumphost = api.GetAttributeValue(ap_res.Name, "{}.jumphost".format(ap_res.ResourceModelName)).Value
@@ -33,7 +47,7 @@ def factory_reset(api,res_id,ap_res,terminal_server):
                   InputNameValue("ap_jumphost", ap_jumphost),
                   InputNameValue("ap_port", ap_port)]
 
-        api.WriteMessageToReservationOutput(sandbox.id, "Run on {}".format(ap_res.Name))
+        api.WriteMessageToReservationOutput(sandbox.id, "Running on {}".format(ap_res.Name))
         res = api.ExecuteCommand(res_id,terminal_server,'Resource',"Run_Ap_Factory_Reset",inputs,printOutput = True)
 
      #   res = api.ExecuteResourceConnectedCommand(res_id, ap_res.Name,"Run_Script",inputs)
@@ -55,7 +69,7 @@ def execute_terminal_script(sandbox, components):
     if terminal_server:
     #Find all Access points resources in the reservation
         ap_resources =  [resource for resource in resources
-                     if resource.ResourceModelName == "Ap"]
+                     if resource.ResourceModelName == "ApV2"]
 
         if ap_resources:
             sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id, 'Running Factory Reset on all Access Points')
@@ -80,5 +94,6 @@ DefaultSetupWorkflow().register(sandbox)
 sandbox.workflow.add_to_provisioning(helm_install, [])
 sandbox.workflow.on_provisioning_ended(ap_redirect, [])
 sandbox.workflow.on_provisioning_ended(execute_terminal_script, [])
+sandbox.workflow.on_provisioning_ended(power_off_other_aps, [])
 
 sandbox.execute_setup()

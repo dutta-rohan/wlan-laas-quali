@@ -3,8 +3,6 @@ import git
 import shutil
 import subprocess
 import tempfile
-import requests
-import urllib.request
 from distutils.dir_util import copy_tree
 
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
@@ -12,11 +10,6 @@ from cloudshell.shell.core.driver_context import InitCommandContext, ResourceCom
     AutoLoadAttribute, AutoLoadDetails, CancellationContext
 from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
 from data_model import *  # run 'shellfoundry generate' to generate data model classes
-
-
-URL_TEMPLATE = 'https://sec-{}.cicd.lab.wlan.tip.build/ping'
-WINDOWS_LINE_ENDING = b'\r\n'
-UNIX_LINE_ENDING = b'\n'
 
 
 def onerror(func, path, exc_info):
@@ -60,16 +53,14 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         """
         pass
 
-    def helm_install(self, context):
+    def helm_install(self, context, chart_version, ucentralgw_version, ucentralsec_version, ucentralfms_version, ucentralgwui_version):
         api_session = CloudShellSessionContext(context).get_api()
         res_id = context.reservation.reservation_id
         partial_namespace = res_id.split('-')[0]
-        namespace = 'ucentral-' + partial_namespace
 
         service_resource = HelmServiceV2.create_from_context(context)
 
-        api_session.WriteMessageToReservationOutput(res_id, "Installing Helm Chart from: {}...".format(
-                                                            service_resource.github_repo_url))
+        api_session.WriteMessageToReservationOutput(res_id, "Downloading Helm Install Script: {}".format(service_resource.github_repo_url))
 
         # Get AWS creds from AWS EC2 resource
         aws_resource = api_session.FindResources(resourceModel='AWS EC2').Resources[0]
@@ -77,59 +68,49 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         secret_access_key = api_session.GetAttributeValue(aws_resource.Name, 'AWS Secret Access Key').Value
         region = api_session.GetAttributeValue(aws_resource.Name, 'Region').Value
 
+        # Clone Git Repo to temporary directory
+        working_dir = tempfile.mkdtemp()
+        git.Repo.clone_from(service_resource.github_repo_url, working_dir, branch=service_resource.github_repo_branch, depth=1)
+
+        github_path = os.path.join(*(service_resource.github_repo_path_to_chart.split('/')))
+        cert_path = os.path.join(working_dir, github_path)
+        script_path = os.path.join(cert_path, 'deploy.sh')
+
+        # Copy certs from local directory to git repo folder
+        local_cert_path = os.path.join('/Quali', 'helm', 'certs')
+        copy_tree(local_cert_path, cert_path)
+
         # Set environment variables for aws cli configuration
         os.environ['AWS_ACCESS_KEY_ID'] = api_session.DecryptPassword(access_key_id).Value
         os.environ['AWS_SECRET_ACCESS_KEY'] = api_session.DecryptPassword(secret_access_key).Value
         os.environ['AWS_DEFAULT_REGION'] = region
 
-        # Clone Git Repo to temporary directory
-        working_dir = tempfile.mkdtemp()
-        git.Repo.clone_from(service_resource.github_repo_url, working_dir, branch=service_resource.github_repo_branch, depth=1)
+        # Set environment variables for script run
+        os.environ['NAMESPACE'] = partial_namespace
+        os.environ['DEPLOY_METHOD'] = 'git'
+        os.environ['CHART_VERSION'] = chart_version
+        os.environ['UCENTRALGW_VERSION'] = ucentralgw_version
+        os.environ['UCENTRALGWUI_VERSION'] = ucentralgwui_version
+        os.environ['UCENTRALSEC_VERSION'] = ucentralsec_version
+        os.environ['UCENTRALFMS_VERSION'] = ucentralfms_version
+        os.environ['VALUES_FILE_LOCATION'] = 'values.ucentral-qa.yaml'
+        os.environ['RTTY_TOKEN'] = api_session.DecryptPassword(service_resource.rtty_token).Value
+        os.environ['UCENTRALGW_AUTH_USERNAME'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_username).Value
+        os.environ['UCENTRALGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_password).Value
+        os.environ['UCENTRALFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_secret).Value
+        os.environ['UCENTRALFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_key).Value
+        os.environ['CERT_LOCATION'] = 'cert.pem'
+        os.environ['KEY_LOCATION'] = 'key.pem'
 
-        # Copy certs from local folder to temporary git repo certs directory
-        temp_path = os.path.join(working_dir, service_resource.github_repo_path_to_chart, 'resources')
-        if not os.path.exists(temp_path):
-            os.makedirs(temp_path)
-
-        temp_path = os.path.join(working_dir, service_resource.github_repo_path_to_chart, 'resources', 'certs')
-        if not os.path.exists(temp_path):
-            os.makedirs(temp_path)
-
-        local_cert_path = os.path.join('/Quali', 'helm', 'certs')
-        temp_cert_path = os.path.join(working_dir, service_resource.github_repo_path_to_chart, 'resources', 'certs')
-        copy_tree(local_cert_path, temp_cert_path)
-
-        # Get windows batch file for Helm Install and enter secrets
-        response = requests.get(service_resource.helm_deploy_script_url)
-
-        temp = str(response.content.decode('utf-8')).replace('{NAMESPACE}', partial_namespace)
-
-        temp = temp.replace('{AWS_ACCESS_KEY_ID}', api_session.DecryptPassword(access_key_id).Value)
-        temp = temp.replace('{AWS_SECRET_ACCESS_KEY}', api_session.DecryptPassword(secret_access_key).Value)
-        temp = temp.replace('{AWS_DEFAULT_REGION}', region)
-        temp = temp.replace('{RTTY_TOKEN}', api_session.DecryptPassword(service_resource.rtty_token).Value)
-        temp = temp.replace('{UCENTRALGW_AUTH_USERNAME}', api_session.DecryptPassword(service_resource.ucentralgw_auth_username).Value)
-        temp = temp.replace('{UCENTRALGW_AUTH_PASSWORD}', api_session.DecryptPassword(service_resource.ucentralgw_auth_password).Value)
-        temp = temp.replace('{UCENTRALFMS_S3_SECRET}', api_session.DecryptPassword(service_resource.ucentralfms_s3_secret).Value)
-        temp = temp.replace('{UCENTRALFMS_S3_KEY}', api_session.DecryptPassword(service_resource.ucentralfms_s3_key).Value)
-        #temp = temp.replace(WINDOWS_LINE_ENDING, UNIX_LINE_ENDING)
-
-        script_path = os.path.join(working_dir, service_resource.github_repo_path_to_chart, 'helmDeploy.sh')
-
-        fout = open(script_path, "wt")
-        fout.write(temp)
-        fout.close()
         os.chmod(script_path, 0o777)
 
-        chart_path = os.path.join(working_dir, service_resource.github_repo_path_to_chart)
-
-        result = subprocess.Popen('dos2unix helmDeploy.sh', cwd=chart_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen('dos2unix deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, errors = result.communicate(' ')
         if errors:
             api_session.WriteMessageToReservationOutput(res_id, repr(errors))
 
         # Run batch file in temp directory
-        result = subprocess.Popen('./helmDeploy.sh', cwd=chart_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.Popen('./deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, errors = result.communicate(' ')
         if errors:
             api_session.WriteMessageToReservationOutput(res_id, repr(errors))

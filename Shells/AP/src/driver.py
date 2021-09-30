@@ -1,8 +1,9 @@
 import os
-import git
 import shutil
 import subprocess
 import tempfile
+import paramiko
+import requests
 
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.shell.core.driver_context import InitCommandContext, ResourceCommandContext, AutoLoadResource, \
@@ -13,11 +14,19 @@ from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionCo
 from cloudshell.core.context.error_handling_context import ErrorHandlingContext
 from data_model import *  # run 'shellfoundry generate' to generate data model classes
 
+# Vars for PDU functions
 GITHUB_REPO = 'https://github.com/Telecominfraproject/wlan-testing.git'
 GITHUB_REPO_Branch = 'master'
 GITHUB_REPO_NAME = 'wlan-testing'
 PDU_REPO_PATH = 'tools'
 PDU_SCRIPT_NAME = 'pdu_automation.py'
+
+# Vars for ap redirect
+SCRIPT_URL = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-change-ap-redirector.sh'
+SCRIPT_URL2 = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-library.sh'
+SCRIPT_URL3 = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-config.sh'
+URL_TEMPLATE = 'gw-ucentral-{}.cicd.lab.wlan.tip.build'
+
 
 def onerror(func, path, exc_info):
     """
@@ -83,17 +92,6 @@ class ApDriver (ResourceDriverInterface):
 
         return resource.create_autoload_details()
 
-        '''
-        resource = Ap.create_from_context(context)
-        resource.vendor = 'specify the shell vendor'
-        resource.model = 'specify the shell model'
-
-        port1 = ResourcePort('Port 1')
-        port1.ipv4_address = '192.168.10.7'
-        resource.add_sub_resource('1', port1)
-
-        return resource.create_autoload_details()
-        '''
         # return AutoLoadDetails([], [])
 
     # </editor-fold>
@@ -111,37 +109,6 @@ class ApDriver (ResourceDriverInterface):
       :return: SavedResults serialized as JSON
       :rtype: OrchestrationSaveResult
       """
-
-      # See below an example implementation, here we use jsonpickle for serialization,
-      # to use this sample, you'll need to add jsonpickle to your requirements.txt file
-      # The JSON schema is defined at:
-      # https://github.com/QualiSystems/sandbox_orchestration_standard/blob/master/save%20%26%20restore/saved_artifact_info.schema.json
-      # You can find more information and examples examples in the spec document at
-      # https://github.com/QualiSystems/sandbox_orchestration_standard/blob/master/save%20%26%20restore/save%20%26%20restore%20standard.md
-      '''
-            # By convention, all dates should be UTC
-            created_date = datetime.datetime.utcnow()
-
-            # This can be any unique identifier which can later be used to retrieve the artifact
-            # such as filepath etc.
-
-            # By convention, all dates should be UTC
-            created_date = datetime.datetime.utcnow()
-
-            # This can be any unique identifier which can later be used to retrieve the artifact
-            # such as filepath etc.
-            identifier = created_date.strftime('%y_%m_%d %H_%M_%S_%f')
-
-            orchestration_saved_artifact = OrchestrationSavedArtifact('REPLACE_WITH_ARTIFACT_TYPE', identifier)
-
-            saved_artifacts_info = OrchestrationSavedArtifactInfo(
-                resource_name="some_resource",
-                created_date=created_date,
-                restore_rules=OrchestrationRestoreRules(requires_same_resource=True),
-                saved_artifact=orchestration_saved_artifact)
-
-            return OrchestrationSaveResult(saved_artifacts_info)
-      '''
       pass
 
     def orchestration_restore(self, context, cancellation_context, saved_artifact_info, custom_params):
@@ -153,31 +120,79 @@ class ApDriver (ResourceDriverInterface):
         :param str custom_params: Set of custom parameters for the restore operation
         :return: None
         """
-        '''
-        # The saved_details JSON will be defined according to the JSON Schema and is the same object returned via the
-        # orchestration save function.
-        # Example input:
-        # {
-        #     "saved_artifact": {
-        #      "artifact_type": "REPLACE_WITH_ARTIFACT_TYPE",
-        #      "identifier": "16_08_09 11_21_35_657000"
-        #     },
-        #     "resource_name": "some_resource",
-        #     "restore_rules": {
-        #      "requires_same_resource": true
-        #     },
-        #     "created_date": "2016-08-09T11:21:35.657000"
-        #    }
-
-        # The example code below just parses and prints the saved artifact identifier
-        saved_details_object = json.loads(saved_details)
-        return saved_details_object[u'saved_artifact'][u'identifier']
-        '''
         pass
 
     # </editor-fold>
 
-    def powerOffOtherAPs(self, context, cancellation_context):
+    def apRedirect(self, context, namespace):
+        with LoggingSessionContext(context) as logger, ErrorHandlingContext(logger):
+            with CloudShellSessionContext(context) as api_session:
+
+                resource = Ap.create_from_context(context)
+                #redirect_url = URL_TEMPLATE.format(context.reservation.reservation_id.split('-')[0])
+                redirect_url = URL_TEMPLATE.format(namespace)
+
+                working_dir = tempfile.mkdtemp()
+
+                script_path = os.path.join(working_dir, 'digicert-change-ap-redirector.sh')
+                script_path2 = os.path.join(working_dir, 'digicert-library.sh')
+                script_path3 = os.path.join(working_dir, 'digicert-config.sh')
+
+                response = requests.get(SCRIPT_URL)
+                response2 = requests.get(SCRIPT_URL2)
+                response3 = requests.get(SCRIPT_URL3)
+
+                temp = str(response.content.decode('utf-8'))
+                fout = open(script_path, "wt")
+                fout.write(temp)
+                fout.close()
+                os.chmod(script_path, 0o777)
+
+                temp = str(response2.content.decode('utf-8'))
+                fout = open(script_path2, "wt")
+                fout.write(temp)
+                fout.close()
+                os.chmod(script_path2, 0o777)
+
+                temp = str(response3.content.decode('utf-8'))
+                fout = open(script_path3, "wt")
+                fout.write(temp)
+                fout.close()
+                os.chmod(script_path3, 0o777)
+
+                result = subprocess.Popen('dos2unix digicert-change-ap-redirector.sh', cwd=working_dir, shell=True,
+                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                output, errors = result.communicate(' ')
+                if errors:
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
+
+                result = subprocess.Popen('dos2unix digicert-library.sh', cwd=working_dir, shell=True, stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE)
+                output, errors = result.communicate(' ')
+                if errors:
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
+
+                result = subprocess.Popen('dos2unix digicert-config.sh', cwd=working_dir, shell=True, stdout=subprocess.PIPE,
+                                          stderr=subprocess.PIPE)
+                output, errors = result.communicate(' ')
+                if errors:
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
+
+                os.environ['DIGICERT_API_KEY'] = api_session.DecryptPassword(
+                    resource.attributes['Digicert API Key']).Value
+
+                result = subprocess.Popen(
+                    './digicert-change-ap-redirector.sh {} {}'.format(resource.attributes['Ap.serial'], redirect_url),
+                    cwd=working_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                output, errors = result.communicate(' ')
+                if errors:
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
+
+                shutil.rmtree(working_dir, onerror=onerror)
+
+                api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
+
+    def powerOtherAPs(self, context, cmd='on'):
         res_id = context.reservation.reservation_id
 
         with LoggingSessionContext(context) as logger, ErrorHandlingContext(logger):
@@ -191,64 +206,36 @@ class ApDriver (ResourceDriverInterface):
 
                 if other_aps:
                     for each in other_aps:
+                        terminal_ip = api_session.GetResourceDetails(each.Name).Address
+                        terminal_user = context.resource.attributes["{}.uname".format(each.Model)]
+                        terminal_pass = context.resource.attributes["{}.passkey".format(each.Model)]
+                        #terminal_pass = api_session.DecryptPassword(terminal_pass).Value
                         hostname = context.resource.attributes["{}.PDU Host".format(each.Model)]
                         username = context.resource.attributes["{}.PDU User".format(each.Model)]
                         password = context.resource.attributes["{}.PDU Password".format(each.Model)]
+                        #password = api_session.DecryptPassword(password).Value
                         port = context.resource.attributes["{}.PDU Port".format(each.Model)]
 
-                        working_dir = tempfile.mkdtemp()
-                        git.Repo.clone_from(GITHUB_REPO, working_dir, branch=GITHUB_REPO_Branch, depth=1)
+                        s = paramiko.SSHClient()
+                        s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                        s.connect(hostname=terminal_ip, username=terminal_user,
+                                  password=terminal_pass)
+                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port '{}'; cd /tmp && rm -f -r wlan-testing".format(
+                            PDU_SCRIPT_NAME, hostname, username, password, cmd, port)
 
-                        tools_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH)
-                        script_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH, PDU_SCRIPT_NAME)
-
-                        cmd = "python3 {} --host {} --user {} --password {} --action off --port '{}'".format(PDU_SCRIPT_NAME, hostname, username, password, port)
-
-                        result = subprocess.Popen(cmd, cwd=tools_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        output, errors = result.communicate(' ')
-                        if errors:
-                            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
-
-                        # Delete temp folder
-                        shutil.rmtree(working_dir, onerror=onerror)
-
-                else:
-                    api_session.WriteMessageToReservationOutput(res_id, 'No APs to power off.')
-
-    def powerOnOtherAPs(self, context, cancellation_context):
-        res_id = context.reservation.reservation_id
-
-        with LoggingSessionContext(context) as logger, ErrorHandlingContext(logger):
-            with CloudShellSessionContext(context) as api_session:
-
-                other_aps = []
-
-                for each in api_session.FindResources(resourceModel='Ap').Resources:
-                    if context.resource.name != each.Name and context.resource.name.split(' - ')[1] == each.Name .split(' - ')[1]:
-                        other_aps.append(each)
-
-                if other_aps:
-                    for each in other_aps:
-                        hostname = context.resource.attributes["{}.PDU Host".format(each.Model)]
-                        username = context.resource.attributes["{}.PDU User".format(each.Model)]
-                        password = context.resource.attributes["{}.PDU Password".format(each.Model)]
-                        port = context.resource.attributes["{}.PDU Port".format(each.Model)]
-
-                        working_dir = tempfile.mkdtemp()
-                        git.Repo.clone_from(GITHUB_REPO, working_dir, branch=GITHUB_REPO_Branch, depth=1)
-
-                        tools_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH)
-                        script_path = os.path.join(working_dir, GITHUB_REPO_NAME, PDU_REPO_PATH, PDU_SCRIPT_NAME)
-
-                        cmd = "python3 {} --host {} --user {} --password {} --action on --port '{}'".format(PDU_SCRIPT_NAME, hostname, username, password, port)
-
-                        result = subprocess.Popen(cmd, cwd=tools_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        output, errors = result.communicate(' ')
-                        if errors:
-                            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
-
-                        # Delete temp folder
-                        shutil.rmtree(working_dir, onerror=onerror)
+                        (stdin, stdout, stderr) = s.exec_command(command)
+                        output = ''
+                        errors = ''
+                        for line in stdout.readlines():
+                            output += line
+                        for line in stderr.readlines():
+                            errors += line
+                        if errors != '':
+                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, errors)
+                        else:
+                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
+                                                                        '{} Powered {}.'.format(each.Name, cmd))
+                        s.close()
 
                 else:
-                    api_session.WriteMessageToReservationOutput(res_id, 'No APs to power on.')
+                    api_session.WriteMessageToReservationOutput(res_id, 'No APs to power {}.'.format(cmd))
