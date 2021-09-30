@@ -25,7 +25,7 @@ PDU_SCRIPT_NAME = 'pdu_v3.py'
 SCRIPT_URL = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-change-ap-redirector.sh'
 SCRIPT_URL2 = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-library.sh'
 SCRIPT_URL3 = 'https://raw.githubusercontent.com/Telecominfraproject/wlan-pki-cert-scripts/master/digicert-config.sh'
-URL_TEMPLATE = 'gw-ucentral-{}.cicd.lab.wlan.tip.build'
+URL_TEMPLATE = 'gw-{}.cicd.lab.wlan.tip.build'
 
 def onerror(func, path, exc_info):
     """
