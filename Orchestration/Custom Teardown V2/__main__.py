@@ -85,6 +85,6 @@ DefaultTeardownWorkflow().register(sandbox)
 sandbox.workflow.before_teardown_started(helm_uninstall, [])
 sandbox.workflow.before_teardown_started(ap_redirect, [])
 sandbox.workflow.before_teardown_started(execute_terminal_script, [])
-sandbox.workflow.on_provisioning_ended(power_on_other_aps, [])
+sandbox.workflow.before_teardown_started(power_on_other_aps, [])
 
 sandbox.execute_teardown()
