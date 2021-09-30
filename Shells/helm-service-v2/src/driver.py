@@ -53,7 +53,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         """
         pass
 
-    def helm_install(self, context, chart_version, ucentralgw_version, ucentralsec_version, ucentralfms_version, ucentralgwui_version):
+    def helm_install(self, context, chart_version, owgw_version, owsec_version, owfms_version, owgwui_version):
         api_session = CloudShellSessionContext(context).get_api()
         res_id = context.reservation.reservation_id
         partial_namespace = res_id.split('-')[0]
@@ -89,16 +89,28 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['NAMESPACE'] = partial_namespace
         os.environ['DEPLOY_METHOD'] = 'git'
         os.environ['CHART_VERSION'] = chart_version
-        os.environ['UCENTRALGW_VERSION'] = ucentralgw_version
-        os.environ['UCENTRALGWUI_VERSION'] = ucentralgwui_version
-        os.environ['UCENTRALSEC_VERSION'] = ucentralsec_version
-        os.environ['UCENTRALFMS_VERSION'] = ucentralfms_version
+
+        os.environ['OWGW_VERSION'] = owgw_version
+        os.environ['OWGWUI_VERSION'] = owgwui_version
+        os.environ['OWSEC_VERSION'] = owsec_version
+        os.environ['OWFMS_VERSION'] = owfms_version
+        #os.environ['UCENTRALGW_VERSION'] = ucentralgw_version
+        #os.environ['UCENTRALGWUI_VERSION'] = ucentralgwui_version
+        #os.environ['UCENTRALSEC_VERSION'] = ucentralsec_version
+        #os.environ['UCENTRALFMS_VERSION'] = ucentralfms_version
+
         os.environ['VALUES_FILE_LOCATION'] = 'values.ucentral-qa.yaml'
         os.environ['RTTY_TOKEN'] = api_session.DecryptPassword(service_resource.rtty_token).Value
-        os.environ['UCENTRALGW_AUTH_USERNAME'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_username).Value
-        os.environ['UCENTRALGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_password).Value
-        os.environ['UCENTRALFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_secret).Value
-        os.environ['UCENTRALFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_key).Value
+
+        os.environ['OWGW_AUTH_USERNAME'] = api_session.DecryptPassword(service_resource.owgw_auth_username).Value
+        os.environ['OWGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.owgw_auth_password).Value
+        os.environ['OWFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.owfms_s3_secret).Value
+        os.environ['OWFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.owfms_s3_key).Value
+        #os.environ['UCENTRALGW_AUTH_USERNAME'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_username).Value
+        #os.environ['UCENTRALGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_password).Value
+        #os.environ['UCENTRALFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_secret).Value
+        #os.environ['UCENTRALFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_key).Value
+
         os.environ['CERT_LOCATION'] = 'cert.pem'
         os.environ['KEY_LOCATION'] = 'key.pem'
 
@@ -124,7 +136,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         api_session = CloudShellSessionContext(context).get_api()
         res_id = context.reservation.reservation_id
         partial_namespace = res_id.split('-')[0]
-        namespace = 'ucentral-' + partial_namespace
+        namespace = 'openwifi-' + partial_namespace
 
         api_session.WriteMessageToReservationOutput(res_id, "Executing Helm Uninstall...")
 
@@ -147,7 +159,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         #    api_session.WriteMessageToReservationOutput(res_id, repr(errors))
 
         # Helm delete/uninstall
-        command2 = ' '.join(['helm del tip-ucentral --namespace', namespace])
+        command2 = ' '.join(['helm del tip-openwifi --namespace', namespace])
         result2 = subprocess.Popen(command2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, errors = result2.communicate(' ')
         #if len(errors) > 0:

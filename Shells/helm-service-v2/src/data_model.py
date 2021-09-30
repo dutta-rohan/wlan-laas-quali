@@ -290,6 +290,66 @@ class HelmServiceV2(object):
         self.attributes['Helm Service V2.UCENTRALFMS_S3_KEY'] = value
 
     @property
+    def owgw_auth_username(self):
+        """
+        :rtype: string
+        """
+        return self.attributes['Helm Service V2.OWGW_AUTH_USERNAME'] if 'Helm Service V2.OWGW_AUTH_USERNAME' in self.attributes else None
+
+    @owgw_auth_username.setter
+    def owgw_auth_username(self, value):
+        """
+        OWGW_AUTH_USERNAME
+        :type value: string
+        """
+        self.attributes['Helm Service V2.OWGW_AUTH_USERNAME'] = value
+
+    @property
+    def owgw_auth_password(self):
+        """
+        :rtype: string
+        """
+        return self.attributes['Helm Service V2.OWGW_AUTH_PASSWORD'] if 'Helm Service V2.OWGW_AUTH_PASSWORD' in self.attributes else None
+
+    @owgw_auth_password.setter
+    def owgw_auth_password(self, value):
+        """
+        OWGW_AUTH_PASSWORD
+        :type value: string
+        """
+        self.attributes['Helm Service V2.OWGW_AUTH_PASSWORD'] = value
+
+    @property
+    def owfms_s3_secret(self):
+        """
+        :rtype: string
+        """
+        return self.attributes['Helm Service V2.OWFMS_S3_SECRET'] if 'Helm Service V2.OWFMS_S3_SECRET' in self.attributes else None
+
+    @owfms_s3_secret.setter
+    def owfms_s3_secret(self, value):
+        """
+        OWFMS_S3_SECRET
+        :type value: string
+        """
+        self.attributes['Helm Service V2.OWFMS_S3_SECRET'] = value
+
+    @property
+    def owfms_s3_key(self):
+        """
+        :rtype: string
+        """
+        return self.attributes['Helm Service V2.OWFMS_S3_KEY'] if 'Helm Service V2.OWFMS_S3_KEY' in self.attributes else None
+
+    @owfms_s3_key.setter
+    def owfms_s3_key(self, value):
+        """
+        OWFMS_S3_KEY
+        :type value: string
+        """
+        self.attributes['Helm Service V2.OWFMS_S3_KEY'] = value
+
+    @property
     def user(self):
         """
         :rtype: str
