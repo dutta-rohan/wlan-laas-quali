@@ -63,3 +63,10 @@ data = {
 response = requests.post(url, data=json.dumps(data), headers=headers)
 print(response)
 print(response.text)
+
+if response.status_code == 200:
+    # continue to wait for setup to complete
+    pass
+else:
+    # Skip to next AP
+    pass
