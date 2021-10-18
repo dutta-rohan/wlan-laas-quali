@@ -92,8 +92,9 @@ sandbox = Sandbox()
 
 DefaultSetupWorkflow().register(sandbox)
 sandbox.workflow.add_to_provisioning(helm_install, [])
-sandbox.workflow.on_provisioning_ended(ap_redirect, [])
+sandbox.workflow.add_to_provisioning(ap_redirect, [])
+sandbox.workflow.add_to_provisioning(power_off_other_aps, [])
+
 sandbox.workflow.on_provisioning_ended(execute_terminal_script, [])
-sandbox.workflow.on_provisioning_ended(power_off_other_aps, [])
 
 sandbox.execute_setup()
