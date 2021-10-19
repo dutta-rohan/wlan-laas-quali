@@ -12,11 +12,15 @@ def helm_install(sandbox, components):
             owsec_version = InputNameValue(Name='owsec_version', Value=sandbox.global_inputs['owsec Version'])
             owfms_version = InputNameValue(Name='owfms_version', Value=sandbox.global_inputs['owfms Version'])
             owgwui_version = InputNameValue(Name='owgwui_version', Value=sandbox.global_inputs['owgwui Version'])
+            owprov_version = InputNameValue(Name='owprov_version', Value=sandbox.global_inputs['owprov Version'])
+            owprovui_version = InputNameValue(Name='owprovui_version', Value=sandbox.global_inputs['owprovui Version'])
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
                                                                                                       owgw_version,
                                                                                                       owsec_version,
                                                                                                       owfms_version,
-                                                                                                      owgwui_version])
+                                                                                                      owgwui_version,
+                                                                                                      owprov_version,
+                                                                                                      owprovui_version])
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
