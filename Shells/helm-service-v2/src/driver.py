@@ -94,6 +94,8 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['OWGWUI_VERSION'] = owgwui_version
         os.environ['OWSEC_VERSION'] = owsec_version
         os.environ['OWFMS_VERSION'] = owfms_version
+        os.environ['OWPROV_VERSION'] = owprov_version
+        os.environ['OWPROVUI_VERSION'] = owprovui_version
         #os.environ['UCENTRALGW_VERSION'] = ucentralgw_version
         #os.environ['UCENTRALGWUI_VERSION'] = ucentralgwui_version
         #os.environ['UCENTRALSEC_VERSION'] = ucentralsec_version
