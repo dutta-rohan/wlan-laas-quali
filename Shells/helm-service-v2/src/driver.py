@@ -53,7 +53,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         """
         pass
 
-    def helm_install(self, context, chart_version, owgw_version, owsec_version, owfms_version, owgwui_version):
+    def helm_install(self, context, chart_version, owgw_version, owsec_version, owfms_version, owgwui_version, owprov_version, owprovui_version):
         api_session = CloudShellSessionContext(context).get_api()
         res_id = context.reservation.reservation_id
         partial_namespace = res_id.split('-')[0]
