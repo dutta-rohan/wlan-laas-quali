@@ -1,12 +1,15 @@
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from cloudshell.workflow.orchestration.setup.default_setup_orchestrator import DefaultSetupWorkflow
-from cloudshell.api.cloudshell_api import InputNameValue
+from cloudshell.api.cloudshell_api import InputNameValue, AttributeNameValue
 from multiprocessing.pool import ThreadPool
 
 
 def helm_install(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
         if each.ServiceName == 'Helm Service V2':
+            namespace = AttributeNameValue(Name='Namespace', Value=sandbox.id.split('-')[0])
+            sandbox.automation_api.SetServiceAttributesValues(sandbox.id, each.ServiceName, [namespace])
+
             chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
             owgw_version = InputNameValue(Name='owgw_version', Value=sandbox.global_inputs['owgw Version'])
             owsec_version = InputNameValue(Name='owsec_version', Value=sandbox.global_inputs['owsec Version'])
