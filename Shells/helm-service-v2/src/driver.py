@@ -122,7 +122,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         output, errors = result.communicate(' ')
         if result.returncode != 0:
             if errors:
-                api_session.WriteMessageToReservationOutput(res_id, 'Helm Deploy Failed. Errors in Activity Log. Please Contact CloudShell Admin.')
+                api_session.WriteMessageToReservationOutput(res_id, 'Helm Deploy Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(result.returncode))
                 raise Exception(repr(errors))
         else:
             api_session.WriteMessageToReservationOutput(res_id, "Helm Install Successful.")
@@ -155,7 +155,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         output, errors = result.communicate(' ')
         if result.returncode != 0:
             if len(errors) > 0:
-                api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) + repr(errors))
 
         # Helm delete/uninstall
         command = ' '.join(['helm del tip-openwifi --namespace', namespace])
@@ -163,7 +163,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         output, errors = result.communicate(' ')
         if result.returncode != 0:
             if len(errors) > 0:
-                api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) repr(errors))
 
         # Delete namespace
         command = ' '.join(['kubectl delete namespace', namespace])
@@ -171,7 +171,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         output, errors = result.communicate(' ')
         if result.returncode != 0:
             if len(errors) > 0:
-                api_session.WriteMessageToReservationOutput(res_id, 'Helm Uninstall Failed. Errors in Activity Logs. Please Contact CloudShell Admin. ')
+                api_session.WriteMessageToReservationOutput(res_id, 'Helm Uninstall Failed: Returncode: {}. Errors in Activity Logs. Please Contact CloudShell Admin. '.format(result.returncode))
                 api_session.WriteMessageToReservationOutput(res_id, repr(errors))
         else:
             api_session.WriteMessageToReservationOutput(res_id, "Helm Uninstall Successful.")
