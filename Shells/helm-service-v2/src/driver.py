@@ -54,6 +54,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         pass
 
     def helm_install(self, context, chart_version, owgw_version, owsec_version, owfms_version, owgwui_version, owprov_version, owprovui_version):
+
         api_session = CloudShellSessionContext(context).get_api()
         res_id = context.reservation.reservation_id
         partial_namespace = res_id.split('-')[0]
@@ -96,10 +97,6 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['OWFMS_VERSION'] = owfms_version
         os.environ['OWPROV_VERSION'] = owprov_version
         os.environ['OWPROVUI_VERSION'] = owprovui_version
-        #os.environ['UCENTRALGW_VERSION'] = ucentralgw_version
-        #os.environ['UCENTRALGWUI_VERSION'] = ucentralgwui_version
-        #os.environ['UCENTRALSEC_VERSION'] = ucentralsec_version
-        #os.environ['UCENTRALFMS_VERSION'] = ucentralfms_version
 
         os.environ['VALUES_FILE_LOCATION'] = 'values.ucentral-qa.yaml'
         os.environ['RTTY_TOKEN'] = api_session.DecryptPassword(service_resource.rtty_token).Value
@@ -108,31 +105,31 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['OWGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.owgw_auth_password).Value
         os.environ['OWFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.owfms_s3_secret).Value
         os.environ['OWFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.owfms_s3_key).Value
-        #os.environ['UCENTRALGW_AUTH_USERNAME'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_username).Value
-        #os.environ['UCENTRALGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.ucentralgw_auth_password).Value
-        #os.environ['UCENTRALFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_secret).Value
-        #os.environ['UCENTRALFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.ucentralfms_s3_key).Value
 
         os.environ['CERT_LOCATION'] = 'cert.pem'
         os.environ['KEY_LOCATION'] = 'key.pem'
 
         os.chmod(script_path, 0o777)
 
-        result = subprocess.Popen('dos2unix deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, errors = result.communicate(' ')
-        if errors:
-            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        #result = subprocess.Popen('dos2unix deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        #output, errors = result.communicate(' ')
+        #if result.returncode != 0:
+        #    if errors:
+        #        api_session.WriteMessageToReservationOutput(res_id, repr(errors))
 
         # Run batch file in temp directory
         result = subprocess.Popen('./deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, errors = result.communicate(' ')
-        if errors:
-            api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        shutil.rmtree(working_dir, onerror=onerror)
+        if result.returncode != 0:
+            if errors:
+                api_session.WriteMessageToReservationOutput(res_id, 'Helm Deploy Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(result.returncode))
+                raise Exception(repr(errors))
+        else:
+            api_session.WriteMessageToReservationOutput(res_id, "Helm Install Successful.")
 
         # Delete temp folder
-        shutil.rmtree(working_dir, onerror=onerror)
-
-        api_session.WriteMessageToReservationOutput(res_id, "Helm Install Successful.")
+        #shutil.rmtree(working_dir, onerror=onerror)
 
     def helm_uninstall(self, context):
         api_session = CloudShellSessionContext(context).get_api()
@@ -154,24 +151,28 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['AWS_DEFAULT_REGION'] = region
 
         # Update Kubeconfig prior to helm install
-        command1 = 'aws eks update-kubeconfig --name tip-wlan-main'
-        result1 = subprocess.Popen(command1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, errors = result1.communicate(' ')
-        #if len(errors) > 0:
-        #    api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        command = 'aws eks update-kubeconfig --name tip-wlan-main'
+        result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, errors = result.communicate(' ')
+        if result.returncode != 0:
+            if len(errors) > 0:
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) + repr(errors))
 
         # Helm delete/uninstall
-        command2 = ' '.join(['helm del tip-openwifi --namespace', namespace])
-        result2 = subprocess.Popen(command2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, errors = result2.communicate(' ')
-        #if len(errors) > 0:
-        #    api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        command = ' '.join(['helm del tip-openwifi --namespace', namespace])
+        result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, errors = result.communicate(' ')
+        if result.returncode != 0:
+            if len(errors) > 0:
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) + repr(errors))
 
         # Delete namespace
-        command3 = ' '.join(['kubectl delete namespace', namespace])
-        result3 = subprocess.Popen(command3, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output, errors = result3.communicate(' ')
-        #if len(errors) > 0:
-        #    api_session.WriteMessageToReservationOutput(res_id, repr(errors))
-
-        api_session.WriteMessageToReservationOutput(res_id, "Helm Uninstall Successful.")
+        command = ' '.join(['kubectl delete namespace', namespace])
+        result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, errors = result.communicate(' ')
+        if result.returncode != 0:
+            if len(errors) > 0:
+                api_session.WriteMessageToReservationOutput(res_id, 'Helm Uninstall Failed: Returncode: {}. Errors in Activity Logs. Please Contact CloudShell Admin. '.format(result.returncode))
+                api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        else:
+            api_session.WriteMessageToReservationOutput(res_id, "Helm Uninstall Successful.")
