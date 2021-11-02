@@ -78,8 +78,8 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         script_path = os.path.join(cert_path, 'deploy.sh')
 
         # Copy certs from local directory to git repo folder
-        # local_cert_path = os.path.join('/Quali', 'helm', 'certs')
-        # copy_tree(local_cert_path, cert_path)
+        local_cert_path = os.path.join('/Quali', 'helm', 'certs')
+        copy_tree(local_cert_path, cert_path)
 
         # Set environment variables for aws cli configuration
         os.environ['AWS_ACCESS_KEY_ID'] = api_session.DecryptPassword(access_key_id).Value
@@ -120,6 +120,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         # Run batch file in temp directory
         result = subprocess.Popen('./deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, errors = result.communicate(' ')
+        shutil.rmtree(working_dir, onerror=onerror)
         if result.returncode != 0:
             if errors:
                 api_session.WriteMessageToReservationOutput(res_id, 'Helm Deploy Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(result.returncode))
@@ -128,7 +129,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
             api_session.WriteMessageToReservationOutput(res_id, "Helm Install Successful.")
 
         # Delete temp folder
-        shutil.rmtree(working_dir, onerror=onerror)
+        #shutil.rmtree(working_dir, onerror=onerror)
 
     def helm_uninstall(self, context):
         api_session = CloudShellSessionContext(context).get_api()
@@ -163,7 +164,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         output, errors = result.communicate(' ')
         if result.returncode != 0:
             if len(errors) > 0:
-                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) repr(errors))
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) + repr(errors))
 
         # Delete namespace
         command = ' '.join(['kubectl delete namespace', namespace])
