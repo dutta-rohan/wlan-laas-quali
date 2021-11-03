@@ -33,7 +33,15 @@ def helm_install(sandbox, components):
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
         if each.ResourceModelName == 'ApV2':
-            namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+            sdk_namespace = sandbox.global_inputs['Optional Existing SDK Namespace']
+            if sdk_namespace != '':
+                namespace = InputNameValue(Name='namespace', Value=sdk_namespace)
+                sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id,
+                                                                       'Attempting AP Redirect to namespace: {}'.format(sdk_namespace))
+            else:
+                namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+                sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id,
+                                                                       'Attempting AP Redirect to namespace: {}'.format(sandbox.id.split('-')[0]))
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
 def power_off_other_aps(sandbox, components):
