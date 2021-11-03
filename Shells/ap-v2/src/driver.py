@@ -157,7 +157,7 @@ class ApV2Driver (ResourceDriverInterface):
                 fout.close()
                 os.chmod(script_path3, 0o777)
 
-                result = subprocess.Popen('dos2unix digicert-change-ap-redirector.sh', cwd=working_dir, shell=True,
+                '''result = subprocess.Popen('dos2unix digicert-change-ap-redirector.sh', cwd=working_dir, shell=True,
                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output, errors = result.communicate(' ')
                 if errors:
@@ -173,7 +173,7 @@ class ApV2Driver (ResourceDriverInterface):
                                           stderr=subprocess.PIPE)
                 output, errors = result.communicate(' ')
                 if errors:
-                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))'''
 
                 os.environ['DIGICERT_API_KEY'] = api_session.DecryptPassword(
                     resource.attributes['Digicert API Key']).Value
@@ -182,12 +182,15 @@ class ApV2Driver (ResourceDriverInterface):
                     './digicert-change-ap-redirector.sh {} {}'.format(resource.attributes['{}.serial'.format(resource.cloudshell_model_name)], redirect_url),
                     cwd=working_dir, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output, errors = result.communicate(' ')
-                if errors:
-                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, repr(errors))
-
                 shutil.rmtree(working_dir, onerror=onerror)
-
-                api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
+                if result.returncode != 0:
+                    if errors:
+                        api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
+                                                                    'Digicert AP Redirect Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(
+                                                                        result.returncode))
+                        raise Exception(repr(errors))
+                else:
+                    api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
 
     def powerOtherAPs(self, context, cmd='on'):
         res_id = context.reservation.reservation_id
@@ -221,21 +224,25 @@ class ApV2Driver (ResourceDriverInterface):
                         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                         s.connect(hostname=terminal_ip, username=terminal_user,
                                   password=terminal_pass)
-                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port {}; cd /tmp && rm -f -r wlan-testing".format(
+                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port {}".format(
                             PDU_SCRIPT_NAME, hostname, username, password, cmd, port)
 
+                        command2 = "cd /tmp && rm -f -r wlan-testing"
+
                         (stdin, stdout, stderr) = s.exec_command(command)
+                        (stdin2, stdout2, stderr2) = s.exec_command(command2)
+
                         output = ''
                         errors = ''
                         for line in stdout.readlines():
                             output += line
                         for line in stderr.readlines():
                             errors += line
-                        if errors != '':
-                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, errors)
+                        if stdout.channel.recv_exit_status() != 0:
+                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,'PDU Power command failed: ' + errors)
+                            raise Exception(errors)
                         else:
-                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
-                                                                        '{} Powered {}.'.format(each.Name, cmd))
+                            api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, '{} Powered {}.'.format(each.Name, cmd))
                         s.close()
 
                 else:
