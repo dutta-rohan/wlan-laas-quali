@@ -5,9 +5,11 @@ from multiprocessing.pool import ThreadPool
 
 
 def helm_uninstall(sandbox, components):
-    for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
-        if each.ServiceName == 'Helm Service V2':
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_uninstall')
+    namespace = sandbox.global_inputs['Optional Existing SDK Namespace']
+    if namespace == '':
+        for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
+            if each.ServiceName == 'Helm Service V2':
+                sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_uninstall')
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
@@ -82,6 +84,7 @@ def execute_terminal_script(sandbox, components):
 sandbox = Sandbox()
 
 DefaultTeardownWorkflow().register(sandbox)
+
 sandbox.workflow.before_teardown_started(helm_uninstall, [])
 sandbox.workflow.before_teardown_started(ap_redirect, [])
 sandbox.workflow.before_teardown_started(execute_terminal_script, [])
