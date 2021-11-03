@@ -5,30 +5,43 @@ from multiprocessing.pool import ThreadPool
 
 
 def helm_install(sandbox, components):
-    for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
-        if each.ServiceName == 'Helm Service V2':
-            namespace = AttributeNameValue(Name='Namespace', Value=sandbox.id.split('-')[0])
-            sandbox.automation_api.SetServiceAttributesValues(sandbox.id, each.ServiceName, [namespace])
+    namespace = sandbox.global_inputs['Optional Existing SDK Namespace']
+    if namespace == '':
+        for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Services:
+            if each.ServiceName == 'Helm Service V2':
 
-            chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
-            owgw_version = InputNameValue(Name='owgw_version', Value=sandbox.global_inputs['owgw Version'])
-            owsec_version = InputNameValue(Name='owsec_version', Value=sandbox.global_inputs['owsec Version'])
-            owfms_version = InputNameValue(Name='owfms_version', Value=sandbox.global_inputs['owfms Version'])
-            owgwui_version = InputNameValue(Name='owgwui_version', Value=sandbox.global_inputs['owgwui Version'])
-            owprov_version = InputNameValue(Name='owprov_version', Value=sandbox.global_inputs['owprov Version'])
-            owprovui_version = InputNameValue(Name='owprovui_version', Value=sandbox.global_inputs['owprovui Version'])
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
-                                                                                                      owgw_version,
-                                                                                                      owsec_version,
-                                                                                                      owfms_version,
-                                                                                                      owgwui_version,
-                                                                                                      owprov_version,
-                                                                                                      owprovui_version])
+                namespace = AttributeNameValue(Name='Namespace', Value=sandbox.id.split('-')[0])
+                sandbox.automation_api.SetServiceAttributesValues(sandbox.id, each.ServiceName, [namespace])
+
+                chart_version = InputNameValue(Name='chart_version', Value=sandbox.global_inputs['Chart Version'])
+                owgw_version = InputNameValue(Name='owgw_version', Value=sandbox.global_inputs['owgw Version'])
+                owsec_version = InputNameValue(Name='owsec_version', Value=sandbox.global_inputs['owsec Version'])
+                owfms_version = InputNameValue(Name='owfms_version', Value=sandbox.global_inputs['owfms Version'])
+                owgwui_version = InputNameValue(Name='owgwui_version', Value=sandbox.global_inputs['owgwui Version'])
+                owprov_version = InputNameValue(Name='owprov_version', Value=sandbox.global_inputs['owprov Version'])
+                owprovui_version = InputNameValue(Name='owprovui_version', Value=sandbox.global_inputs['owprovui Version'])
+                sandbox.automation_api.ExecuteCommand(sandbox.id, each.Alias, "Service", 'helm_install', [chart_version,
+                                                                                                          owgw_version,
+                                                                                                          owsec_version,
+                                                                                                          owfms_version,
+                                                                                                          owgwui_version,
+                                                                                                          owprov_version,
+                                                                                                          owprovui_version])
+    else:
+        sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id, 'Using Existing SDK')
 
 def ap_redirect(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
         if each.ResourceModelName == 'ApV2':
-            namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+            sdk_namespace = sandbox.global_inputs['Optional Existing SDK Namespace']
+            if sdk_namespace != '':
+                namespace = InputNameValue(Name='namespace', Value=sdk_namespace)
+                sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id,
+                                                                       'Attempting AP Redirect to namespace: {}'.format(sdk_namespace))
+            else:
+                namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
+                sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id,
+                                                                       'Attempting AP Redirect to namespace: {}'.format(sandbox.id.split('-')[0]))
             sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
 
 def power_off_other_aps(sandbox, components):
@@ -98,6 +111,7 @@ def execute_terminal_script(sandbox, components):
 sandbox = Sandbox()
 
 DefaultSetupWorkflow().register(sandbox)
+
 sandbox.workflow.add_to_provisioning(helm_install, [])
 sandbox.workflow.on_provisioning_ended(ap_redirect, [])
 sandbox.workflow.on_provisioning_ended(execute_terminal_script, [])
