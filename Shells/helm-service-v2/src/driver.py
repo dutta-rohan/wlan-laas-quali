@@ -64,7 +64,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         api_session.WriteMessageToReservationOutput(res_id, "Downloading Helm Install Script: {}".format(service_resource.github_repo_url))
 
         # Get AWS creds from AWS EC2 resource
-        aws_resource = api_session.FindResources(resourceModel='AWS EC2').Resources[0]
+        aws_resource = api_session.FindResources(resourceModel='AWS EC2', showAllDomains=True).Resources[0]
         access_key_id = api_session.GetAttributeValue(aws_resource.Name, 'AWS Access Key ID').Value
         secret_access_key = api_session.GetAttributeValue(aws_resource.Name, 'AWS Secret Access Key').Value
         region = api_session.GetAttributeValue(aws_resource.Name, 'Region').Value
@@ -140,7 +140,7 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         api_session.WriteMessageToReservationOutput(res_id, "Executing Helm Uninstall...")
 
         # Get AWS creds from AWS EC2 resource
-        aws_resource = api_session.FindResources(resourceModel='AWS EC2').Resources[0]
+        aws_resource = api_session.FindResources(resourceModel='AWS EC2', showAllDomains=True).Resources[0]
         access_key_id = api_session.GetAttributeValue(aws_resource.Name, 'AWS Access Key ID').Value
         secret_access_key = api_session.GetAttributeValue(aws_resource.Name, 'AWS Secret Access Key').Value
         region = api_session.GetAttributeValue(aws_resource.Name, 'Region').Value
