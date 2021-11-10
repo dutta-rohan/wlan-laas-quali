@@ -31,34 +31,35 @@ Before loading, scripts and shells must be zipped. For shells specifically, the 
 ## setup steps for dev environment
 https://help.quali.com/Online%20Help/0.0/Portal/Content/DevGuide/Shells/Getting-Started.htm?tocpath=The%20CloudShell%20DevGuide%7CDeveloping%20Shells%7C_____1
 
-$ pip3 install shellfoundry
-$ shellfoundry config : This command returns something like this:
+`$ pip3 install shellfoundry`
+`$ shellfoundry config` : This command returns something like this:
 
-Key                Value          
------------------------------------
- host               localhost    * 
- password           [encrypted]  * 
- template_location  Empty        * 
- username           admin        * 
- port               9000         *                                                                                                                                                                                
- github_password    [encrypted]  *                                                                                                                                                                                
- github_login                    *                                                                                                                                                                                
- domain             Global       *                                                                                                                                                                                
- author             Anonymous    *                                                                                                                                                                                
- online_mode        True         *                                                                                                                                                                                
- defaultview        gen2         *                                                                                                                                                                                
+
+`key`              | `value`      
+
+ host              | localhost    * 
+ password          | [encrypted]  * 
+ template_location | Empty        * 
+ username          | admin        * 
+ port              | 9000         *                                                                                                                                                                                
+ github_password   | [encrypted]  *                                                                                                                                                                                
+ github_login      |              *                                                                                                                                                                                
+ domain            | Global       *                                                                                                                                                                                
+ author            | Anonymous    *                                                                                                                                                                                
+ online_mode       | True         *                                                                                                                                                                                
+ defaultview       | gen2         *                                                                                                                                                                                
                                                                                                                                                                                                                   
 
     * Value marked with '*' is actually the default value and has not been override by the user.
 
 To set value  :
-    $ shellfoundry config <key> <Value>
+    `$ shellfoundry config <key> <Value>`
 
 To set the value of host to the IP address (or hostname) of the Windows Server:
-    $ shellfoundry config host <IP of Server>
+    `$ shellfoundry config host <IP of Server>`
 
 To set the value of password:
-    $ shellfoundry config password <password of Server>
+    `$ shellfoundry config password <password of Server>`
 
 Run `$ shellfoundry list`  to check if server configuration is successful
 Use `$ shellfoundry new <shell name> --python 3 --template gen2/resource` : This will create a new shell called <shell name> which uses python3 based on a gen2/resource template  
@@ -66,11 +67,11 @@ Use `$ shellfoundry new <shell name> --python 3 --template gen2/resource` : This
 Server configuration is needed to access templates. If server is not configured, you will see this error
     Error: Cannot retrieve standards list. Error: Connection to CloudShell Server failed. Please make sure it is up and running properly.
 
-$ cd <shell name>
-$ sudo apt install python3.9-venv //For virtual environment 
-$ python3 -m venv <venv-name>    //For virtual environment
-$ source <venv-name>/bin/activate
-$ python3 -m pip install -r src/requirements.txt //Ensure all basic shell dependencies are installed
+`$ cd <shell name>`
+`$ sudo apt install python3.9-venv` //For virtual environment 
+`$ python3 -m venv <venv-name> `   //For virtual environment
+`$ source <venv-name>/bin/activate`
+`$ python3 -m pip install -r src/requirements.txt` //Ensure all basic shell dependencies are installed
 
 
 To reflect changes from local setup to CloudShell
