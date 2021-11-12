@@ -88,24 +88,25 @@ class ControllerVmDriver (ResourceDriverInterface):
                     s = paramiko.SSHClient()
                     s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                     s.connect(hostname=context.resource.address, username=username, password=api_session.DecryptPassword(password).Value)
-                    command = 'cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && chmod +x ap_tools.py && python3 ap_tools.py --host {} --jumphost {} --tty {} --port {} --username {} --password {} --cmd "jffs2reset -y -r"'.format(
+                    command = 'cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && chmod +x ap_tools.py'
+
+                    command2 = 'python3 ap_tools.py --host {} --jumphost {} --tty {} --port {} --username {} --password {} --cmd "jffs2reset -y -r"'.format(
                               ap_ip, ap_jumphost, ap_tty, ap_port, ap_user, api_session.DecryptPassword(ap_password).Value)
 
-                    command2 = "cd /tmp && rm -f -r wlan-testing"
+                    command3 = "cd /tmp && rm -f -r wlan-testing"
 
                     (stdin, stdout, stderr) = s.exec_command(command)
                     (stdin2, stdout2, stderr2) = s.exec_command(command2)
+                    (stdin3, stdout3, stderr3) = s.exec_command(command3)
 
                     output = ''
                     errors = ''
-                    for line in stdout.readlines():
-                        output += line
-                    for line in stderr.readlines():
+                    for line in stderr2.readlines():
                         errors += line
-                    if stdout.channel.recv_exit_status() != 0:
+                    if stdout2.channel.recv_exit_status() != 0:
                         api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
                                                                     'AP Factory Reset failed: ' + errors)
-                        raise Exception(errors)
+                        raise Exception('Error executing Script: ' + errors)
                     else:
                         api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
                                                                     'AP Factory Reset Complete.')
@@ -113,7 +114,7 @@ class ControllerVmDriver (ResourceDriverInterface):
 
         except Exception as e:
             logger.info("Error executing Script: {}".format(e.message))
-            return e.message
+            raise Exception('Error executing Script: ' + e.message)
 
 
     # <editor-fold desc="Orchestration Save and Restore Standard">
