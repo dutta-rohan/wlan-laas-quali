@@ -73,7 +73,8 @@ def factory_reset(api,res_id,ap_res,terminal_server):
      #   res = api.ExecuteResourceConnectedCommand(res_id, ap_res.Name,"Run_Script",inputs)
 
     except Exception as e:
-        api.WriteMessageToReservationOutput(sandbox.id, e.message)
+        api.WriteMessageToReservationOutput(sandbox.id, 'Failed to Factory Reset {}'.format(ap_res.Name))
+        raise Exception('Failed to Factory Reset {}'.format(ap_res.Name))
 
 
 def execute_terminal_script(sandbox, components):
