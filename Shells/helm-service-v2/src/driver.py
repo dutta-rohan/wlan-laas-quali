@@ -105,17 +105,20 @@ class HelmServiceV2Driver (ResourceDriverInterface):
         os.environ['OWGW_AUTH_PASSWORD'] = api_session.DecryptPassword(service_resource.owgw_auth_password).Value
         os.environ['OWFMS_S3_SECRET'] = api_session.DecryptPassword(service_resource.owfms_s3_secret).Value
         os.environ['OWFMS_S3_KEY'] = api_session.DecryptPassword(service_resource.owfms_s3_key).Value
+        os.environ['OWSEC_NEW_PASSWORD'] = 'OpenWifi%123'
 
         os.environ['CERT_LOCATION'] = 'cert.pem'
         os.environ['KEY_LOCATION'] = 'key.pem'
 
         os.chmod(script_path, 0o777)
 
-        #result = subprocess.Popen('dos2unix deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        #output, errors = result.communicate(' ')
-        #if result.returncode != 0:
-        #    if errors:
-        #        api_session.WriteMessageToReservationOutput(res_id, repr(errors))
+        # Update Kubeconfig prior to helm install
+        command = 'aws eks update-kubeconfig --name tip-wlan-main'
+        result = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, errors = result.communicate(' ')
+        if result.returncode != 0:
+            if len(errors) > 0:
+                api_session.WriteMessageToReservationOutput(res_id, 'Returncode: {}. '.format(result.returncode) + repr(errors))
 
         # Run batch file in temp directory
         result = subprocess.Popen('./deploy.sh', cwd=cert_path, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
