@@ -191,6 +191,7 @@ class ApV2Driver (ResourceDriverInterface):
                         raise Exception(repr(errors))
                 else:
                     api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
+                    return output
 
     def powerOtherAPs(self, context, cmd='on'):
         res_id = context.reservation.reservation_id

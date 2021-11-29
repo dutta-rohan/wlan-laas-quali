@@ -98,6 +98,8 @@ class ControllerVmDriver (ResourceDriverInterface):
 
                     output = ''
                     errors = ''
+                    for line in stdout2.readlines():
+                        output += line
                     for line in stderr2.readlines():
                         errors += line
                     if stdout2.channel.recv_exit_status() != 0:
@@ -108,6 +110,8 @@ class ControllerVmDriver (ResourceDriverInterface):
                         api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
                                                                     'AP Factory Reset Complete.')
                     s.close()
+
+                    return output
 
         except Exception as e:
             logger.info("Error executing Script: {}".format(e.message))
