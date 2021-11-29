@@ -191,6 +191,7 @@ class ApV2Driver (ResourceDriverInterface):
                         raise Exception(repr(errors))
                 else:
                     api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
+                    return output
 
     def powerOtherAPs(self, context, cmd='on'):
         res_id = context.reservation.reservation_id
@@ -224,10 +225,10 @@ class ApV2Driver (ResourceDriverInterface):
                         s.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                         s.connect(hostname=terminal_ip, username=terminal_user,
                                   password=terminal_pass)
-                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port {}".format(
-                            PDU_SCRIPT_NAME, hostname, username, password, cmd, port)
+                        command = "cd /tmp && git clone https://github.com/Telecominfraproject/wlan-testing.git; cd wlan-testing && git checkout master"
 
-                        command2 = "cd /tmp && rm -f -r wlan-testing"
+                        command2 = "cd /tmp/wlan-testing/tools && python3 {} --host {} --user {} --password {} --action {} --port {}".format(
+                            PDU_SCRIPT_NAME, hostname, username, password, cmd, port)
 
                         (stdin, stdout, stderr) = s.exec_command(command)
                         (stdin2, stdout2, stderr2) = s.exec_command(command2)
@@ -238,7 +239,7 @@ class ApV2Driver (ResourceDriverInterface):
                             output += line
                         for line in stderr.readlines():
                             errors += line
-                        if stdout.channel.recv_exit_status() != 0:
+                        if stdout2.channel.recv_exit_status() != 0:
                             api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,'PDU Power command failed: ' + errors)
                             raise Exception(errors)
                         else:
