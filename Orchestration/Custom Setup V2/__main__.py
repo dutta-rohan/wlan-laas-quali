@@ -42,7 +42,7 @@ def ap_redirect(sandbox, components):
                 namespace = InputNameValue(Name='namespace', Value=sandbox.id.split('-')[0])
                 sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id,
                                                                        'Attempting AP Redirect to namespace: {}'.format(sandbox.id.split('-')[0]))
-            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace])
+            sandbox.automation_api.ExecuteCommand(sandbox.id, each.Name, 'Resource', 'apRedirect', [namespace], printOutput=True)
 
 def power_off_other_aps(sandbox, components):
     for each in sandbox.automation_api.GetReservationDetails(sandbox.id).ReservationDescription.Resources:
