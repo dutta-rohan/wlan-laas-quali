@@ -189,6 +189,11 @@ class ApV2Driver (ResourceDriverInterface):
                                                                     'Digicert AP Redirect Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(
                                                                         result.returncode))
                         raise Exception(repr(errors))
+                    else:
+                        api_session.WriteMessageToReservationOutput(context.reservation.reservation_id,
+                                                                    'Digicert AP Redirect Failed: Returncode: {}. Errors in Activity Log. Please Contact CloudShell Admin.'.format(
+                                                                        result.returncode))
+                        raise Exception(repr(output))
                 else:
                     api_session.WriteMessageToReservationOutput(context.reservation.reservation_id, "Digicert AP Redirect Successful.")
                     return output
