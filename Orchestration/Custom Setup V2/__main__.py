@@ -119,15 +119,11 @@ def execute_terminal_script(sandbox, components):
                 pool.close()
                 pool.join()
 
-                try:
-                    for i in range(len(ap_resources)):
-                        if async_results[i].successful() == False:
-                            print('Thread Exception Caught')
-                            raise Exception('Caught')
+                for i in range(len(ap_resources)):
+                    if async_results[i].successful() == False:
+                        raise Exception('Caught')
 
-                except Exception as e:
-                    sandbox.automation_api.WriteMessageToReservationOutput(sandbox.id, 'Exception in ThreadPool Caught: ' + e.message)
-                    sandbox.automation_api.EndReservation(sandbox.id)
+
 
 
 
